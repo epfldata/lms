@@ -49,6 +49,7 @@ trait StringOps extends Variables with OverloadHack {
   def infix_charAt(s: Rep[String], i: Rep[Int])(implicit pos: SourceContext) = string_charAt(s,i)
   def infix_endsWith(s: Rep[String], e: Rep[String])(implicit pos: SourceContext) = string_endsWith(s,e)
   def infix_contains(s1: Rep[String], s2: Rep[String])(implicit pos: SourceContext) = string_contains(s1,s2)
+  def infix_format(s: Rep[String], params:Rep[Any]*)(implicit pos: SourceContext) = string_format(s, params)
   def infix_toDouble(s: Rep[String])(implicit pos: SourceContext) = string_todouble(s)
   def infix_toFloat(s: Rep[String])(implicit pos: SourceContext) = string_tofloat(s)
   def infix_toInt(s: Rep[String])(implicit pos: SourceContext) = string_toint(s)
@@ -67,6 +68,7 @@ trait StringOps extends Variables with OverloadHack {
   def string_startswith(s1: Rep[String], s2: Rep[String])(implicit pos: SourceContext): Rep[Boolean]
   def string_trim(s: Rep[String])(implicit pos: SourceContext): Rep[String]
   def string_split(s: Rep[String], separators: Rep[String], limit: Rep[Int])(implicit pos: SourceContext): Rep[Array[String]]
+  def string_format(s: Rep[String], params:Seq[Rep[Any]])(implicit pos: SourceContext): Rep[String]
   def string_valueof(d: Rep[Any])(implicit pos: SourceContext): Rep[String]
   def string_charAt(s: Rep[String], i: Rep[Int])(implicit pos: SourceContext): Rep[Char]
   def string_endsWith(s: Rep[String], e: Rep[String])(implicit pos: SourceContext): Rep[Boolean]
@@ -81,12 +83,14 @@ trait StringOps extends Variables with OverloadHack {
 }
 
 trait StringOpsExp extends StringOps with VariablesExp {
+  case class StringNew(s: Exp[Any]) extends Def[String]
   case class StringPlus(s: Exp[Any], o: Exp[Any]) extends Def[String]
   case class StringStartsWith(s1: Exp[String], s2: Exp[String]) extends Def[Boolean]
   case class StringTrim(s: Exp[String]) extends Def[String]
   case class StringSplit(s: Exp[String], separators: Exp[String], limit: Exp[Int]) extends Def[Array[String]]
   case class StringEndsWith(s: Exp[String], e: Exp[String]) extends Def[Boolean]  
   case class StringCharAt(s: Exp[String], i: Exp[Int]) extends Def[Char]
+  case class StringFormat(s: Exp[String], params:Seq[Rep[Any]]) extends Def[String]
   case class StringValueOf(a: Exp[Any]) extends Def[String]
   case class StringToDouble(s: Exp[String]) extends Def[Double]
   case class StringToFloat(s: Exp[String]) extends Def[Float]
@@ -97,10 +101,12 @@ trait StringOpsExp extends StringOps with VariablesExp {
   case class StringSubstringWithoutEndIndex(s: Exp[String], start: Exp[Int]) extends Def[String]
   case class StringLength(s: Exp[String]) extends Def[Int]
 
+  def string_new(s: Exp[Any]) = StringNew(s)
   def string_plus(s: Exp[Any], o: Exp[Any])(implicit pos: SourceContext): Rep[String] = StringPlus(s,o)
   def string_startswith(s1: Exp[String], s2: Exp[String])(implicit pos: SourceContext) = StringStartsWith(s1,s2)
   def string_trim(s: Exp[String])(implicit pos: SourceContext) : Rep[String] = StringTrim(s)
   def string_split(s: Exp[String], separators: Exp[String], limit: Exp[Int])(implicit pos: SourceContext) : Rep[Array[String]] = StringSplit(s, separators, limit)
+  def string_format(s: Exp[String], params:Seq[Exp[Any]])(implicit pos: SourceContext): Exp[String] = StringFormat(s, params)
   def string_valueof(a: Exp[Any])(implicit pos: SourceContext) = StringValueOf(a)
   def string_charAt(s: Exp[String], i: Exp[Int])(implicit pos: SourceContext) = StringCharAt(s,i)
   def string_endsWith(s: Exp[String], e: Exp[String])(implicit pos: SourceContext) = StringEndsWith(s,e)
@@ -118,6 +124,7 @@ trait StringOpsExp extends StringOps with VariablesExp {
     case StringStartsWith(s1, s2) => string_startswith(f(s1), f(s2))
     case StringTrim(s) => string_trim(f(s))
     case StringSplit(s,sep,l) => string_split(f(s),f(sep),f(l))
+    case StringFormat(s, params) => string_format(f(s), params.map(f(_)))
     case StringToDouble(s) => string_todouble(f(s))
     case StringToFloat(s) => string_tofloat(f(s))
     case StringToInt(s) => string_toint(f(s))
@@ -143,6 +150,7 @@ trait ScalaGenStringOps extends ScalaGenBase {
     case StringSplit(s, sep, l) => emitValDef(sym, src"$s.split($sep,$l)")
     case StringEndsWith(s, e) => emitValDef(sym, "%s.endsWith(%s)".format(quote(s), quote(e)))    
     case StringCharAt(s,i) => emitValDef(sym, "%s.charAt(%s)".format(quote(s), quote(i)))
+    case StringFormat(s,params) => emitValDef(sym, src"$s.format($params)")
     case StringValueOf(a) => emitValDef(sym, src"java.lang.String.valueOf($a)")
     case StringToDouble(s) => emitValDef(sym, src"$s.toDouble")
     case StringToFloat(s) => emitValDef(sym, src"$s.toFloat")
