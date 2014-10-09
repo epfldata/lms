@@ -82,7 +82,28 @@ trait NumericOpsExpOpt extends NumericOpsExp with PrimitiveOpsExp with IfThenEls
     val one = implicitly[Numeric[T]].one
     val minusOne = implicitly[Numeric[T]].negate(one)
     (lhs,rhs) match {
-      case (Const(x), Const(y)) => Const(implicitly[Numeric[T]].times(x,y))
+      case (Const(x), Const(y)) =>
+        if(lhs.tp==rhs.tp)
+          Const(implicitly[Numeric[T]].times(x,y))
+        else (lhs.tp.toString, rhs.tp.toString) match {
+          case ("Long","Double") => Const(implicitly[Numeric[Double]].times(scala.runtime.BoxesRunTime.unboxToLong(x).toDouble,y.asInstanceOf[Double])).asInstanceOf[Exp[T]]
+          case ("Int","Double") => Const(implicitly[Numeric[Double]].times(scala.runtime.BoxesRunTime.unboxToInt(x).toDouble,y.asInstanceOf[Double])).asInstanceOf[Exp[T]]
+          case ("Short","Double") => Const(implicitly[Numeric[Double]].times(scala.runtime.BoxesRunTime.unboxToShort(x).toDouble,y.asInstanceOf[Double])).asInstanceOf[Exp[T]]
+          case ("Byte","Double") => Const(implicitly[Numeric[Double]].times(scala.runtime.BoxesRunTime.unboxToByte(x).toDouble,y.asInstanceOf[Double])).asInstanceOf[Exp[T]]
+          case ("Long","Float") => Const(implicitly[Numeric[Float]].times(scala.runtime.BoxesRunTime.unboxToLong(x).toFloat,y.asInstanceOf[Float])).asInstanceOf[Exp[T]]
+          case ("Int","Float") => Const(implicitly[Numeric[Float]].times(scala.runtime.BoxesRunTime.unboxToInt(x).toFloat,y.asInstanceOf[Float])).asInstanceOf[Exp[T]]
+          case ("Short","Float") => Const(implicitly[Numeric[Float]].times(scala.runtime.BoxesRunTime.unboxToShort(x).toFloat,y.asInstanceOf[Float])).asInstanceOf[Exp[T]]
+          case ("Byte","Float") => Const(implicitly[Numeric[Float]].times(scala.runtime.BoxesRunTime.unboxToByte(x).toFloat,y.asInstanceOf[Float])).asInstanceOf[Exp[T]]
+
+          case ("Double","Long") => Const(implicitly[Numeric[Double]].times(x.asInstanceOf[Double],scala.runtime.BoxesRunTime.unboxToLong(y).toDouble)).asInstanceOf[Exp[T]]
+          case ("Double","Int") => Const(implicitly[Numeric[Double]].times(x.asInstanceOf[Double],scala.runtime.BoxesRunTime.unboxToInt(y).toDouble)).asInstanceOf[Exp[T]]
+          case ("Double","Short") => Const(implicitly[Numeric[Double]].times(x.asInstanceOf[Double],scala.runtime.BoxesRunTime.unboxToShort(y).toDouble)).asInstanceOf[Exp[T]]
+          case ("Double","Byte") => Const(implicitly[Numeric[Double]].times(x.asInstanceOf[Double],scala.runtime.BoxesRunTime.unboxToByte(y).toDouble)).asInstanceOf[Exp[T]]
+          case ("Float","Long") => Const(implicitly[Numeric[Float]].times(x.asInstanceOf[Float],scala.runtime.BoxesRunTime.unboxToLong(y).toFloat)).asInstanceOf[Exp[T]]
+          case ("Float","Int") => Const(implicitly[Numeric[Float]].times(x.asInstanceOf[Float],scala.runtime.BoxesRunTime.unboxToInt(y).toFloat)).asInstanceOf[Exp[T]]
+          case ("Float","Short") => Const(implicitly[Numeric[Float]].times(x.asInstanceOf[Float],scala.runtime.BoxesRunTime.unboxToShort(y).toFloat)).asInstanceOf[Exp[T]]
+          case ("Float","Byte") => Const(implicitly[Numeric[Float]].times(x.asInstanceOf[Float],scala.runtime.BoxesRunTime.unboxToByte(y).toFloat)).asInstanceOf[Exp[T]]
+        }
       case (Const(x), y) if x == zero => Const(x)
       case (x, Const(y)) if y == zero => Const(y)
       case (Const(x), y) if x == one  => y
