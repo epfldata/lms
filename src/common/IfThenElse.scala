@@ -195,6 +195,10 @@ trait IfThenElseExpOpt extends IfThenElseExp with BooleanOpsExp with EqualExpBri
     case Const(false) => elsep
     case Def(BooleanNegate(a)) => __ifThenElse(a, elsep, thenp)
     case Def(NotEqual(a,b)) => __ifThenElse(equals(a,b), elsep, thenp)
+    case Def(IfThenElse(c,Block(Const(true )),Block(f))) if f.tp == Const.booleanManifest => __ifThenElse(boolean_or(c,f.asInstanceOf[Exp[Boolean]]), elsep, thenp)
+    case Def(IfThenElse(c,Block(Const(false)),Block(f))) if f.tp == Const.booleanManifest => __ifThenElse(boolean_and(boolean_negate(c),f.asInstanceOf[Exp[Boolean]]), elsep, thenp)
+    case Def(IfThenElse(c,Block(t),Block(Const(true )))) if t.tp == Const.booleanManifest => __ifThenElse(boolean_or(boolean_negate(c),t.asInstanceOf[Exp[Boolean]]), elsep, thenp)
+    case Def(IfThenElse(c,Block(t),Block(Const(false)))) if t.tp == Const.booleanManifest => __ifThenElse(boolean_and(c,t.asInstanceOf[Exp[Boolean]]), elsep, thenp)
     case _ =>
       super.__ifThenElse(cond, thenp, elsep)
   }
