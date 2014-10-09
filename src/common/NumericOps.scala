@@ -78,8 +78,6 @@ trait NumericOpsExpOpt extends NumericOpsExp with PrimitiveOpsExp with IfThenEls
     case _ => super.numeric_minus(lhs,rhs)
   }
   override def numeric_times[T:Numeric:Manifest](lhs: Exp[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[T] = {
-    java.lang.System.err.println("lhs => "+lhs+" = " + Def.unapply(lhs))
-    java.lang.System.err.println("rhs => "+rhs+" = " + Def.unapply(rhs))
     val zero = implicitly[Numeric[T]].zero
     val one = implicitly[Numeric[T]].one
     val minusOne = implicitly[Numeric[T]].negate(one)
