@@ -76,7 +76,32 @@ trait EqualExpBridgeOpt extends EqualExp {
   }
 }
 
-trait EqualExpOpt extends EqualExp with EqualExpBridgeOpt
+trait EqualExpOpt extends EqualExp with EqualExpBridgeOpt with IfThenElseExpOpt with BooleanOpsExpOpt {
+  override def equals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = (a,b) match {
+    case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x == bb => boolean_or(c, equals(f,b))
+    case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x == bb => boolean_or(boolean_negate(c), equals(t,b))
+    case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x == aa => boolean_or(c, equals(a,f))
+    case (Const(aa),Def(IfThenElse(c,Block(t),Block(Const(x))))) if x == aa => boolean_or(boolean_negate(c), equals(t,a))
+
+    case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x != bb => boolean_and(boolean_negate(c), equals(f,b))
+    case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x != bb => boolean_and(c, equals(t,b))
+    case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x != aa => boolean_and(boolean_negate(c), equals(a,f))
+    case (Const(aa),Def(IfThenElse(c,Block(t),Block(Const(x))))) if x != aa => boolean_and(c, equals(t,a))
+    case _ => super.equals(a,b)
+  }
+  override def notequals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = (a,b) match {
+    case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x != bb => boolean_or(c, notequals(f,b))
+    case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x != bb => boolean_or(boolean_negate(c), notequals(t,b))
+    case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x != aa => boolean_or(c, notequals(a,f))
+    case (Const(aa),Def(IfThenElse(c,Block(t),Block(Const(x))))) if x != aa => boolean_or(boolean_negate(c), notequals(t,a))
+
+    case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x == bb => boolean_and(boolean_negate(c), notequals(f,b))
+    case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x == bb => boolean_and(c, notequals(t,b))
+    case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x == aa => boolean_and(boolean_negate(c), notequals(a,f))
+    case (Const(aa),Def(IfThenElse(c,Block(t),Block(Const(x))))) if x == aa => boolean_and(c, notequals(t,a))
+    case _ => super.notequals(a,b)
+  }
+}
 
 
 trait ScalaGenEqual extends ScalaGenBase {
