@@ -65,19 +65,24 @@ trait EqualExpBridge extends BaseExp  {
 trait EqualExp extends Equal with EqualExpBridge with VariablesExp
 
 trait EqualExpBridgeOpt extends EqualExp {
-  override def equals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = if (a == b) Const(true) else (a,b) match {
+  override def equals[A:Manifest,B:Manifest](a: Exp[A], b: Exp[B])(implicit pos: SourceContext): Exp[Boolean] = if (a == b) Const(true) else (a,b) match {
     case (Const(a),Const(b)) => Const(a == b)
     case _ => super.equals(a,b)
   }
   
-  override def notequals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = if (a == b) Const(false) else (a,b) match {
+  override def notequals[A:Manifest,B:Manifest](a: Exp[A], b: Exp[B])(implicit pos: SourceContext): Exp[Boolean] = if (a == b) Const(false) else (a,b) match {
     case (Const(a),Const(b)) => Const(a != b)
     case _ => super.notequals(a,b)
   }
 }
 
-trait EqualExpOpt extends EqualExp with EqualExpBridgeOpt with IfThenElseExpOpt with BooleanOpsExpOpt {
-  override def equals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = (a,b) match {
+trait EqualExpOpt extends EqualExp with EqualExpBridgeOpt with BooleanOpsExpOpt { this: IfThenElseExpOpt =>
+  override def equals[A:Manifest,B:Manifest](a: Exp[A], b: Exp[B])(implicit pos: SourceContext): Exp[Boolean] = (a,b) match {
+    case (a,Const(true )) if a.tp == Const.booleanManifest => a.asInstanceOf[Exp[Boolean]]
+    case (a,Const(false)) if a.tp == Const.booleanManifest => boolean_negate(a.asInstanceOf[Exp[Boolean]])
+    case (Const(true ),b) if b.tp == Const.booleanManifest => b.asInstanceOf[Exp[Boolean]]
+    case (Const(false),b) if b.tp == Const.booleanManifest => boolean_negate(b.asInstanceOf[Exp[Boolean]])
+
     case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x == bb => boolean_or(c, equals(f,b))
     case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x == bb => boolean_or(boolean_negate(c), equals(t,b))
     case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x == aa => boolean_or(c, equals(a,f))
@@ -89,7 +94,12 @@ trait EqualExpOpt extends EqualExp with EqualExpBridgeOpt with IfThenElseExpOpt 
     case (Const(aa),Def(IfThenElse(c,Block(t),Block(Const(x))))) if x != aa => boolean_and(c, equals(t,a))
     case _ => super.equals(a,b)
   }
-  override def notequals[A:Manifest,B:Manifest](a: Rep[A], b: Rep[B])(implicit pos: SourceContext): Rep[Boolean] = (a,b) match {
+  override def notequals[A:Manifest,B:Manifest](a: Exp[A], b: Exp[B])(implicit pos: SourceContext): Exp[Boolean] = (a,b) match {
+    case (a,Const(true )) if a.tp == Const.booleanManifest => boolean_negate(a.asInstanceOf[Exp[Boolean]])
+    case (a,Const(false)) if a.tp == Const.booleanManifest => a.asInstanceOf[Exp[Boolean]]
+    case (Const(true ),b) if b.tp == Const.booleanManifest => boolean_negate(b.asInstanceOf[Exp[Boolean]])
+    case (Const(false),b) if b.tp == Const.booleanManifest => b.asInstanceOf[Exp[Boolean]]
+
     case (Def(IfThenElse(c,Block(Const(x)),Block(f))),Const(bb)) if x != bb => boolean_or(c, notequals(f,b))
     case (Def(IfThenElse(c,Block(t),Block(Const(x)))),Const(bb)) if x != bb => boolean_or(boolean_negate(c), notequals(t,b))
     case (Const(aa),Def(IfThenElse(c,Block(Const(x)),Block(f)))) if x != aa => boolean_or(c, notequals(a,f))
