@@ -107,6 +107,7 @@ trait Expressions extends Utils {
   }
 
   object Const {
+    val booleanManifest: Manifest[Boolean] = manifest[Boolean]
     val doubleManifest: Manifest[Double] = manifest[Double]
     val floatManifest: Manifest[Float] = manifest[Float]
     val longManifest: Manifest[Long] = manifest[Long]
