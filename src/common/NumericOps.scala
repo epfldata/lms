@@ -65,7 +65,7 @@ trait NumericOpsExp extends NumericOps with VariablesExp with BaseFatExp {
 }
 
 
-trait NumericOpsExpOpt extends NumericOpsExp with PrimitiveOpsExp {
+trait NumericOpsExpOpt extends NumericOpsExp with PrimitiveOpsExp with IfThenElseExpOpt {
   
   override def numeric_plus[T:Numeric:Manifest](lhs: Exp[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[T] = (lhs,rhs) match {
     case (Const(x), Const(y)) => Const(implicitly[Numeric[T]].plus(x,y))
@@ -77,13 +77,30 @@ trait NumericOpsExpOpt extends NumericOpsExp with PrimitiveOpsExp {
     case (Const(x), Const(y)) => Const(implicitly[Numeric[T]].minus(x,y))
     case _ => super.numeric_minus(lhs,rhs)
   }
-  override def numeric_times[T:Numeric:Manifest](lhs: Exp[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[T] = (lhs,rhs) match {
-    case (Const(x), Const(y)) => Const(implicitly[Numeric[T]].times(x,y))
-    case (Const(x), y) if x == implicitly[Numeric[T]].zero => Const(x)
-    case (x, Const(y)) if y == implicitly[Numeric[T]].zero => Const(y)
-    case (Const(x), y) if x == implicitly[Numeric[T]].one => y
-    case (x, Const(y)) if y == implicitly[Numeric[T]].one => x
-    case _ => super.numeric_times(lhs,rhs)
+  override def numeric_times[T:Numeric:Manifest](lhs: Exp[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[T] = {
+    java.lang.System.err.println("lhs => "+lhs+" = " + Def.unapply(lhs))
+    java.lang.System.err.println("rhs => "+rhs+" = " + Def.unapply(rhs))
+    val zero = implicitly[Numeric[T]].zero
+    val one = implicitly[Numeric[T]].one
+    val minusOne = implicitly[Numeric[T]].negate(one)
+    (lhs,rhs) match {
+      case (Const(x), Const(y)) => Const(implicitly[Numeric[T]].times(x,y))
+      case (Const(x), y) if x == zero => Const(x)
+      case (x, Const(y)) if y == zero => Const(y)
+      case (Const(x), y) if x == one  => y
+      case (x, Const(y)) if y == one  => x
+      case (Const(x), y) if x == minusOne  => numeric_minus(Const(zero),y)
+      case (x, Const(y)) if y == minusOne  => numeric_minus(Const(zero),x)
+      case (x, Def(IfThenElse(c,Block(t),Block(Const(y))))) if y == zero => __ifThenElse(c,numeric_times(x,t),Const(y))
+      case (x, Def(IfThenElse(c,Block(Const(y)),Block(f)))) if y == zero => __ifThenElse(c,Const(y),numeric_times(x,f))
+      case (Def(IfThenElse(c,Block(t),Block(Const(x)))), y) if x == zero => __ifThenElse(c,numeric_times(t,y),Const(x))
+      case (Def(IfThenElse(c,Block(Const(x)),Block(f))), y) if x == zero => __ifThenElse(c,Const(x),numeric_times(f,y))
+      case (Def(IfThenElse(c,Block(t),Block(Const(x)))), y) if x == one  => __ifThenElse(c,numeric_times(t,y),y)
+      case (Def(IfThenElse(c,Block(Const(x)),Block(f))), y) if x == one  => __ifThenElse(c,y,numeric_times(f,y))
+      case (x, Def(IfThenElse(c,Block(t),Block(Const(y))))) if y == one  => __ifThenElse(c,numeric_times(x,t),x)
+      case (x, Def(IfThenElse(c,Block(Const(y)),Block(f)))) if y == one  => __ifThenElse(c,x,numeric_times(x,f))
+      case _ => super.numeric_times(lhs,rhs)
+    }
   }
   override def numeric_divide[T:Numeric:Manifest](lhs: Exp[T], rhs: Exp[T])(implicit pos: SourceContext): Exp[T] = (lhs,rhs) match {
     // CAVEAT: Numeric doesn't have .div, Fractional has
@@ -100,6 +117,7 @@ trait ScalaGenNumericOps extends ScalaGenFat {
   
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case NumericPlus(a,b) => emitValDef(sym, src"$a + $b")
+    case NumericMinus(Const(x),b) if x == 0 => emitValDef(sym, src"-$b")
     case NumericMinus(a,b) => emitValDef(sym, src"$a - $b")
     case NumericTimes(a,b) => emitValDef(sym, src"$a * $b")
     case NumericDivide(a,b) => emitValDef(sym, src"$a / $b")

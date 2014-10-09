@@ -182,7 +182,7 @@ trait IfThenElseFatExp extends IfThenElseExp with BaseFatExp {
 }
 
 
-trait IfThenElseExpOpt extends IfThenElseExp { this: BooleanOpsExp with EqualExpBridge =>
+trait IfThenElseExpOpt extends IfThenElseExp with BooleanOpsExp with EqualExpBridge{
   
   //TODO: eliminate conditional if both branches return same value!
 
