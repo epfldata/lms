@@ -92,9 +92,13 @@ trait BooleanOpsExp extends BooleanOps with BaseExp with EffectExp {
 
 }
 
-trait BooleanOpsExpOpt extends BooleanOpsExp {
+trait BooleanOpsExpOpt extends BooleanOpsExp /*with OrderingOpsExp*/ {
   override def boolean_negate(lhs: Exp[Boolean])(implicit pos: SourceContext) = lhs match {
     case Def(BooleanNegate(x)) => x
+    // case Def(o@OrderingLT(r,l)) => ordering_gteq(r,l)(o.aev,o.mev,pos)
+    // case Def(o@OrderingLTEQ(r,l)) => ordering_gt(r,l)(o.aev,o.mev,pos)
+    // case Def(o@OrderingGT(r,l)) => ordering_lteq(r,l)(o.aev,o.mev,pos)
+    // case Def(o@OrderingGTEQ(r,l)) => ordering_lt(r,l)(o.aev,o.mev,pos)
     case _ => super.boolean_negate(lhs)
   }
 }
@@ -109,20 +113,20 @@ trait ScalaGenBooleanOps extends ScalaGenBase with GenericNestedCodegen {
 		val strWriter = new java.io.StringWriter
 		val localStream = new PrintWriter(strWriter);
       	withStream(localStream) {
-      	  gen"""if ($lhs) {
+      	  gen"""($lhs && {
       	       |${nestedBlock(rhs)}
       	       |$rhs
-      	       |} else false"""
+      	       |})"""
       	}
       	emitValDef(sym, strWriter.toString)
     case BooleanOr(lhs,rhs) => 
 		val strWriter = new java.io.StringWriter
 		val localStream = new PrintWriter(strWriter);
       	withStream(localStream) {
-      	  gen"""if ($lhs == false) {
+      	  gen"""($lhs || {
       	       |${nestedBlock(rhs)}
       	       |$rhs
-      	       |} else true"""
+      	       |})"""
       	}
       	emitValDef(sym, strWriter.toString)
     case _ => super.emitNode(sym,rhs)
