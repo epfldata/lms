@@ -49,8 +49,11 @@ trait BooleanOpsExp extends BooleanOps with BaseExp with EffectExp {
     lhs match {
         case x@Const(false) => x
         case _ => {
-            val rhs = reifyEffects(frhs)
-            BooleanAnd(lhs,rhs)
+          val rhs = reifyEffects(frhs)
+          rhs match {
+            case Block(Const(true)) => lhs
+            case _ => BooleanAnd(lhs,rhs)
+          }
         }
     }
   }
@@ -58,9 +61,12 @@ trait BooleanOpsExp extends BooleanOps with BaseExp with EffectExp {
     lhs match {
         case x@Const(true) => x 
         case _ => {
-			val rhs = reifyEffects(frhs)
-			BooleanOr(lhs,rhs)
-		}
+    			val rhs = reifyEffects(frhs)
+          rhs match {
+            case Block(Const(false)) => lhs
+            case _ => BooleanOr(lhs,rhs)
+          }
+    		}
     }
   }
 
