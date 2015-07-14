@@ -37,11 +37,13 @@ trait RangeOpsExp extends RangeOps with FunctionsExp {
   def range_until(start: Exp[Int], end: Exp[Int])(implicit pos: SourceContext) : Exp[Range] = Until(start, end)
   def range_start(r: Exp[Range])(implicit pos: SourceContext) : Exp[Int] = r match { 
     case Def(Until(start, end)) => start
+    case Def(Reflect(Until(start, end), u, es)) => start
     case _ => RangeStart(r)
   }
   def range_step(r: Exp[Range])(implicit pos: SourceContext) : Exp[Int] = RangeStep(r)
   def range_end(r: Exp[Range])(implicit pos: SourceContext) : Exp[Int] = r match { 
     case Def(Until(start, end)) => end
+    case Def(Reflect(Until(start, end), u, es)) => end
     case _ => RangeEnd(r)
   }
   def range_foreach(r: Exp[Range], block: Exp[Int] => Exp[Unit])(implicit pos: SourceContext) : Exp[Unit] = {
@@ -51,7 +53,11 @@ trait RangeOpsExp extends RangeOps with FunctionsExp {
   }
   
   override def mirror[A:Manifest](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
-    case Reflect(RangeForeach(s,e,i,b), u, es) => reflectMirrored(Reflect(RangeForeach(f(s),f(e),f(i).asInstanceOf[Sym[Int]],f(b)), mapOver(f,u), f(es)))(mtype(manifest[A]))
+    case Reflect(RangeForeach(s,e,i,b), u, es) => reflectMirrored(Reflect(RangeForeach(f(s),f(e),f(i).asInstanceOf[Sym[Int]],f(b)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)    
+    case Reflect(RangeStart(r), u, es) => reflectMirrored(Reflect(RangeStart(f(r)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(RangeStep(r), u, es) => reflectMirrored(Reflect(RangeStep(f(r)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(RangeEnd(r), u, es) => reflectMirrored(Reflect(RangeEnd(f(r)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(Until(s,e), u, es) => reflectMirrored(Reflect(Until(f(s),f(e)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
     case _ => super.mirror(e,f)
   }).asInstanceOf[Exp[A]]
 
@@ -84,7 +90,7 @@ trait ScalaGenRangeOps extends ScalaGenEffect with BaseGenRangeOps {
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
-    case Until(start, end) => emitValDef(sym, "" + quote(start) + " until " + quote(end))
+    case Until(start, end) => emitValDef(sym, src"$start until $end")
 
     /*
     case RangeForeach(r, i, body) => {
@@ -96,13 +102,13 @@ trait ScalaGenRangeOps extends ScalaGenEffect with BaseGenRangeOps {
     */
 
     case RangeForeach(start, end, i, body) => {
-      stream.println("var " + quote(i) + " : Int = " + quote(start))
-      stream.println("val " + quote(sym) + " = " + "while (" + quote(i) + " < " + quote(end) + ") {")
-      emitBlock(body)
       // do not need to print unit result
       //stream.println(quote(getBlockResult(body)))
-      stream.println(quote(i) + " = " + quote(i) + " + 1")
-      stream.println("}")
+      gen"""var $i : Int = $start
+           |val $sym = while ($i < $end) {
+           |${nestedBlock(body)}
+           |$i = $i + 1
+           |}"""
     }
 
     case _ => super.emitNode(sym, rhs)
@@ -115,8 +121,8 @@ trait CudaGenRangeOps extends CudaGenEffect with BaseGenRangeOps {
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
     case Until(start, end) =>
-        stream.println(addTab()+"int %s_start = %s;".format(quote(sym), quote(start)))
-        stream.println(addTab()+"int %s_end = %s;".format(quote(sym), quote(end)))
+        gen"""${addTab()}int ${sym}_start = $start;
+             |${addTab()}int ${sym}_end = $end;"""
         // Do nothing: will be handled by RangeForeach
 
     // TODO: What if the range is not continuous integer set?
@@ -132,11 +138,11 @@ trait CudaGenRangeOps extends CudaGenEffect with BaseGenRangeOps {
         paramList = paramList.distinct
         val paramListStr = paramList.map(ele=>remap(ele.tp) + " " + quote(ele)).mkString(", ")
         */
-        stream.println(addTab()+"for(int %s=%s; %s < %s; %s++) {".format(quote(i),quote(start),quote(i),quote(end),quote(i)))
+        gen"${addTab()}for(int $i=$start; $i < $end; $i++) {"
         tabWidth += 1
         emitBlock(body)
         tabWidth -= 1
-        stream.println(addTab() + "}")
+        gen"${addTab()}}"
     }
     case _ => super.emitNode(sym, rhs)
   }
@@ -150,9 +156,9 @@ trait OpenCLGenRangeOps extends OpenCLGenEffect with BaseGenRangeOps {
     case Until(start, end) =>
       throw new GenerationFailedException("OpenCLGenRangeOps: Range vector is not supported")
     case RangeForeach(start, end, i, body) =>
-      stream.println("for(int %s=%s; %s < %s; %s++) {".format(quote(i),quote(start),quote(i),quote(end),quote(i)))
-      emitBlock(body)
-      stream.println("}")
+      gen"""for(int $i=$start; $i < $end; $i++) {
+           |${nestedBlock(body)}
+           |}"""
 
     case _ => super.emitNode(sym, rhs)
   }
@@ -166,9 +172,9 @@ trait CGenRangeOps extends CGenEffect with BaseGenRangeOps {
     case Until(start, end) =>
       throw new GenerationFailedException("CGenRangeOps: Range vector is not supported")
     case RangeForeach(start, end, i, body) =>
-      stream.println("for(int %s=%s; %s < %s; %s++) {".format(quote(i),quote(start),quote(i),quote(end),quote(i)))
-      emitBlock(body)
-      stream.println("}")
+      gen"""for(int $i=$start; $i < $end; $i++) {
+           |${nestedBlock(body)}
+           |}"""
 
     case _ => super.emitNode(sym, rhs)
   }

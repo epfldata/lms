@@ -7,7 +7,7 @@ import java.io.PrintWriter
 
 class TestList extends FileDiffSuite {
 
-  trait MapFlatMapAndFilter { this: ListOps with NumericOps with OrderingOps =>
+  trait MapFlatMapAndFilter { this: ListOps with NumericOps with PrimitiveOps with OrderingOps =>
     def test(xs: Rep[List[Int]]): Rep[List[Int]] = {
       for {
         x <- xs
@@ -22,7 +22,7 @@ class TestList extends FileDiffSuite {
       xs ++ List(unit(1), unit(2), unit(3))
 
     def emptyLeft(xs: Rep[List[Int]]): Rep[List[Int]] =
-      List() ++ xs
+      List[Int]() ++ xs // VIRT 2.11: need type annotation
 
     def emptyRight(xs: Rep[List[Int]]): Rep[List[Int]] =
       xs ++ List()
@@ -33,12 +33,12 @@ class TestList extends FileDiffSuite {
       xs.mkString
   }
 
-  val prefix = "test-out/epfl/test12-"
+  val prefix = home + "test-out/epfl/test12-"
 
   def testMapFlatMapAndFilter() {
     withOutFile(prefix+"map-flatmap-filter") {
-      val prog = new MapFlatMapAndFilter with ListOpsExp with NumericOpsExp with OrderingOpsExp
-      val codegen = new ScalaGenEffect with ScalaGenListOps with ScalaGenNumericOps with ScalaGenOrderingOps { val IR: prog.type = prog }
+      val prog = new MapFlatMapAndFilter with ListOpsExp with NumericOpsExp with PrimitiveOpsExp with OrderingOpsExp
+      val codegen = new ScalaGenEffect with ScalaGenListOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenOrderingOps { val IR: prog.type = prog }
       codegen.emitSource(prog.test, "MapFlatMapAndFilter", new PrintWriter(System.out))
     }
     assertFileEqualsCheck(prefix+"map-flatmap-filter")

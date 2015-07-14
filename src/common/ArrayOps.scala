@@ -31,6 +31,7 @@ trait ArrayOps extends Variables {
     def sort(implicit pos: SourceContext) = array_sort(a)
     def map[B:Manifest](f: Rep[T] => Rep[B]) = array_map(a,f)
     def toSeq = array_toseq(a)
+    def slice(start:Rep[Int], end:Rep[Int]) = array_slice(a,start,end)
   }
 
   def array_obj_new[T:Manifest](n: Rep[Int]): Rep[Array[T]]
@@ -45,6 +46,7 @@ trait ArrayOps extends Variables {
   def array_sort[T:Manifest](x: Rep[Array[T]])(implicit pos: SourceContext): Rep[Array[T]]
   def array_map[A:Manifest,B:Manifest](a: Rep[Array[A]], f: Rep[A] => Rep[B]): Rep[Array[B]]
   def array_toseq[A:Manifest](a: Rep[Array[A]]): Rep[Seq[A]]
+  def array_slice[A:Manifest](a: Rep[Array[A]], start:Rep[Int], end:Rep[Int]): Rep[Array[A]]
 }
 
 trait ArrayOpsExp extends ArrayOps with EffectExp with VariablesExp {
@@ -70,6 +72,7 @@ trait ArrayOpsExp extends ArrayOps with EffectExp with VariablesExp {
     val array = NewArray[B](a.length)
   }
   case class ArrayToSeq[A:Manifest](x: Exp[Array[A]]) extends Def[Seq[A]]
+  case class ArraySlice[A:Manifest](a: Exp[Array[A]], s:Exp[Int], e:Exp[Int]) extends Def[Array[A]]
 
   def array_obj_new[T:Manifest](n: Exp[Int]) = reflectMutable(ArrayNew(n))
   def array_obj_fromseq[T:Manifest](xs: Seq[Exp[T]]) = /*reflectMutable(*/ ArrayFromSeq(xs) /*)*/
@@ -91,6 +94,7 @@ trait ArrayOpsExp extends ArrayOps with EffectExp with VariablesExp {
     reflectEffect(ArrayMap(a, x, b), summarizeEffects(b))
   }
   def array_toseq[A:Manifest](a: Exp[Array[A]]) = ArrayToSeq(a)
+  def array_slice[A:Manifest](a: Rep[Array[A]], start:Rep[Int], end:Rep[Int]) = ArraySlice(a,start,end)
 
   //////////////
   // mirroring
@@ -100,12 +104,12 @@ trait ArrayOpsExp extends ArrayOps with EffectExp with VariablesExp {
     case ArrayLength(x) => array_length(f(x))
     case e@ArraySort(x) => array_sort(f(x))(e.m,pos)
     case e@ArrayCopy(a,ap,d,dp,l) => toAtom(ArrayCopy(f(a),f(ap),f(d),f(dp),f(l))(e.m))(mtype(manifest[A]),pos)
-    case Reflect(e@ArrayNew(n), u, es) => reflectMirrored(Reflect(ArrayNew(f(n))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(e@ArrayLength(x), u, es) => reflectMirrored(Reflect(ArrayLength(f(x))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(ArrayApply(l,r), u, es) => reflectMirrored(Reflect(ArrayApply(f(l),f(r))(mtype(manifest[A])), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(e@ArraySort(x), u, es) => reflectMirrored(Reflect(ArraySort(f(x))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(ArrayUpdate(l,i,r), u, es) => reflectMirrored(Reflect(ArrayUpdate(f(l),f(i),f(r)), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(e@ArrayCopy(a,ap,d,dp,l), u, es) => reflectMirrored(Reflect(ArrayCopy(f(a),f(ap),f(d),f(dp),f(l))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]))
+    case Reflect(e@ArrayNew(n), u, es) => reflectMirrored(Reflect(ArrayNew(f(n))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)    
+    case Reflect(e@ArrayLength(x), u, es) => reflectMirrored(Reflect(ArrayLength(f(x))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)    
+    case Reflect(ArrayApply(l,r), u, es) => reflectMirrored(Reflect(ArrayApply(f(l),f(r))(mtype(manifest[A])), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(e@ArraySort(x), u, es) => reflectMirrored(Reflect(ArraySort(f(x))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(ArrayUpdate(l,i,r), u, es) => reflectMirrored(Reflect(ArrayUpdate(f(l),f(i),f(r)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)   
+    case Reflect(e@ArrayCopy(a,ap,d,dp,l), u, es) => reflectMirrored(Reflect(ArrayCopy(f(a),f(ap),f(d),f(dp),f(l))(e.m), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)     
     case _ => super.mirror(e,f)
   }).asInstanceOf[Exp[A]] // why??
 
@@ -131,6 +135,20 @@ trait ArrayOpsExp extends ArrayOps with EffectExp with VariablesExp {
 
 trait ArrayOpsExpOpt extends ArrayOpsExp {
 
+  /**
+   * @author  Alen Stojanov (astojanov@inf.ethz.ch)
+   */
+  override def array_length[T:Manifest](a: Exp[Array[T]])(implicit pos: SourceContext) : Rep[Int] = a match {
+    case Def(ArrayNew(n: Exp[Int])) => n
+    case Def(ArrayFromSeq(xs)) => Const(xs.size)
+    case Def(ArraySort(x)) => array_length(x)
+    case Def(ArrayMap(x, _, _)) => array_length(x)
+    case Def(Reflect(ArrayNew(n: Exp[Int]), _, _)) => n
+    case Def(Reflect(ArrayFromSeq(xs), _, _)) => Const(xs.size)
+    case Def(Reflect(ArraySort(x), _, _)) => array_length(x)
+    case Def(Reflect(ArrayMap(x, _, _), _, _)) => array_length(x)
+    case _ => super.array_length(a)
+  }
 
   override def array_apply[T:Manifest](x: Exp[Array[T]], n: Exp[Int])(implicit pos: SourceContext): Exp[T] = {
     if (context ne null) {
@@ -168,8 +186,6 @@ trait ArrayOpsExpOpt extends ArrayOpsExp {
     }
   }
 
-
-
 }
 
 
@@ -188,7 +204,7 @@ trait ScalaGenArrayOps extends BaseGenArrayOps with ScalaGenBase {
   val ARRAY_LITERAL_MAX_SIZE = 1000
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
-    case a@ArrayNew(n) => emitValDef(sym, "new Array[" + remap(a.m) + "](" + quote(n) + ")")
+    case a@ArrayNew(n) => emitValDef(sym, src"new Array[${remap(a.m)}]($n)")
     case e@ArrayFromSeq(xs) => {
       emitData(sym, xs)
       emitValDef(sym,
@@ -208,43 +224,45 @@ trait ScalaGenArrayOps extends BaseGenArrayOps with ScalaGenBase {
         }
       )
     }
-    case ArrayApply(x,n) => emitValDef(sym, "" + quote(x) + "(" + quote(n) + ")")
-    case ArrayUpdate(x,n,y) => emitValDef(sym, quote(x) + "(" + quote(n) + ") = " + quote(y))
-    case ArrayLength(x) => emitValDef(sym, "" + quote(x) + ".length")
-    case ArrayForeach(a,x,block) => stream.println("val " + quote(sym) + " = " + quote(a) + ".foreach{")
-      stream.println(quote(x) + " => ")
-      emitBlock(block)
-      stream.println(quote(getBlockResult(block)))
-      stream.println("}")
-    case ArrayCopy(src,srcPos,dest,destPos,len) => emitValDef(sym, "System.arraycopy(" + quote(src) + "," + quote(srcPos) + "," + quote(dest) + "," + quote(destPos) + "," + quote(len) + ")")
+    case ArrayApply(x,n) => emitValDef(sym, src"$x($n)")
+    case ArrayUpdate(x,n,y) => emitValDef(sym, src"$x($n) = $y")
+    case ArrayLength(x) => emitValDef(sym, src"$x.length")
+    case ArrayForeach(a,x,block) =>
+      gen"""val $sym = $a.foreach{
+           |$x => 
+           |${nestedBlock(block)}
+           |$block
+           |}"""
+    case ArrayCopy(src,srcPos,dest,destPos,len) => emitValDef(sym, src"System.arraycopy($src,$srcPos,$dest,$destPos,$len)")
     case a@ArraySort(x) =>
-      stream.println("val " + quote(sym) + " = {")
-      stream.println("val d = new Array[" + remap(a.m) + "](" + quote(x) + ".length" + ")")
-      stream.println("System.arraycopy(" + quote(x) + ", 0, d, 0, " + quote(x) + ".length)")
-      stream.println("scala.util.Sorting.quickSort(d)")
-      stream.println("d")
-      stream.println("}")
+      gen"""val $sym = {
+           |val d = new Array[${remap(a.m)}]($x.length)
+           |System.arraycopy($x, 0, d, 0, $x.length)
+           |scala.util.Sorting.quickSort(d)
+           |d
+           |}"""
     case n@ArrayMap(a,x,blk) =>
-      stream.println("// workaround for refinedManifest problem")
-      stream.println("val " + quote(sym) + " = {")
-      stream.println("val out = " + quote(n.array))
-      stream.println("val in = " + quote(a))
-      stream.println("var i = 0")
-      stream.println("while (i < in.length) {")
-      stream.println("val " + quote(x) + " = in(i)")
-      emitBlock(blk)
-      stream.println("out(i) = " + quote(getBlockResult(blk)))
-      stream.println("i += 1")
-      stream.println("}")
-      stream.println("out")
-      stream.println("}")
+      gen"""// workaround for refinedManifest problem
+           |val $sym = {
+           |val out = ${n.array}
+           |val in = $a
+           |var i = 0
+           |while (i < in.length) {
+           |val $x = in(i)
+           |${nestedBlock(blk)}
+           |out(i) = $blk
+           |i += 1
+           |}
+           |out
+           |}"""
 
       // stream.println("val " + quote(sym) + " = " + quote(a) + ".map{")
       // stream.println(quote(x) + " => ")
       // emitBlock(blk)
       // stream.println(quote(getBlockResult(blk)))
       // stream.println("}")
-    case ArrayToSeq(a) => emitValDef(sym, quote(a) + ".toSeq")
+    case ArrayToSeq(a) => emitValDef(sym, src"$a.toSeq")
+    case ArraySlice(a,s,e) => emitValDef(sym, src"$a.slice($s,$e)")
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -255,9 +273,10 @@ trait CLikeGenArrayOps extends BaseGenArrayOps with CLikeGenBase {
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = {
       rhs match {
-        case ArrayLength(x) => emitValDef(sym, quote(x) + ".length")
-        case ArrayApply(x,n) => emitValDef(sym, quote(x) + ".apply(" + quote(n) + ")")
-        case ArrayUpdate(x,n,y) => stream.println(quote(x) + ".update(" + quote(n) + "," + quote(y) + ");")
+        case ArrayLength(x) => emitValDef(sym, src"sizeof($x)/sizeof(*$x)") // WARN: statically allocated elements only
+        case ArrayApply(x,n) => emitValDef(sym, src"$x[$n]")
+        case ArrayUpdate(x,n,y) => stream.println(src"$x.update($n,$y);")
+        case ArraySlice(x,s,e) => val tp=remap(x.tp.typeArguments(0)); emitValDef(sym, src"({ size_t sz=sizeof("+tp+")*($e-$s); "+tp+"* r = ("+tp+"*)malloc(sz); memcpy(r,(("+tp+"*)$x)+$s,sz); r; })")
         case _ => super.emitNode(sym, rhs)
       }
     }
@@ -265,5 +284,17 @@ trait CLikeGenArrayOps extends BaseGenArrayOps with CLikeGenBase {
 
 trait CudaGenArrayOps extends CudaGenBase with CLikeGenArrayOps
 trait OpenCLGenArrayOps extends OpenCLGenBase with CLikeGenArrayOps
-trait CGenArrayOps extends CGenBase with CLikeGenArrayOps
+trait CGenArrayOps extends CGenBase with BaseGenArrayOps {
+  val IR: ArrayOpsExp
+  import IR._
+
+  override def emitNode(sym: Sym[Any], rhs: Def[Any]) = {
+      rhs match {
+        case ArrayLength(x) => emitValDef(sym, quote(x) + "->length")
+        case ArrayApply(x,n) => emitValDef(sym, quote(x) + "->apply(" + quote(n) + ")")
+        case ArrayUpdate(x,n,y) => stream.println(quote(x) + "->update(" + quote(n) + "," + quote(y) + ");")
+        case _ => super.emitNode(sym, rhs)
+      }
+    }
+}
 

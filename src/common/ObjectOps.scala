@@ -40,8 +40,8 @@ trait ObjectOpsExp extends ObjectOps with VariablesExp {
   override def mirror[A:Manifest](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
     case e@ObjectUnsafeImmutable(a) => object_unsafe_immutable(f(a))(mtype(e.m),pos)
     case e@ObjectToString(a) => object_tostring(f(a))
-    case Reflect(e@ObjectUnsafeImmutable(a), u, es) => reflectMirrored(Reflect(ObjectUnsafeImmutable(f(a))(mtype(e.m)), mapOver(f,u), f(es)))(mtype(manifest[A]))
-    case Reflect(e@ObjectUnsafeMutable(a), u, es) => reflectMirrored(Reflect(ObjectUnsafeMutable(f(a))(mtype(e.m)), mapOver(f,u), f(es)))(mtype(manifest[A]))
+    case Reflect(e@ObjectUnsafeImmutable(a), u, es) => reflectMirrored(Reflect(ObjectUnsafeImmutable(f(a))(mtype(e.m)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
+    case Reflect(e@ObjectUnsafeMutable(a), u, es) => reflectMirrored(Reflect(ObjectUnsafeMutable(f(a))(mtype(e.m)), mapOver(f,u), f(es)))(mtype(manifest[A]), pos)
     case _ => super.mirror(e,f)
   }).asInstanceOf[Exp[A]]
 
@@ -81,9 +81,24 @@ trait ScalaGenObjectOps extends ScalaGenBase {
   import IR._
   
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
-    case ObjectToString(lhs) => emitValDef(sym, "(" + quote(lhs) + ").toString()")
-    case ObjectUnsafeImmutable(x) => emitValDef(sym, quote(x) + "// unsafe immutable")
-    case ObjectUnsafeMutable(x) => emitValDef(sym, quote(x) + "// unsafe mutable")
+    case ObjectToString(lhs) => emitValDef(sym, src"($lhs).toString()")
+    case ObjectUnsafeImmutable(x) => emitValDef(sym, src"$x// unsafe immutable")
+    case ObjectUnsafeMutable(x) => emitValDef(sym, src"$x// unsafe mutable")
+    case _ => super.emitNode(sym, rhs)
+  }
+}
+
+trait GPUGenObjectOps extends GPUGenBase {
+  val IR: ObjectOpsExp
+  import IR._
+
+  override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
+    case ObjectUnsafeImmutable(x) => 
+      emitValDef(sym, quote(x) + "; // unsafe immutable")
+      emitPtrDef(sym, x)
+    case ObjectUnsafeMutable(x) => 
+      emitValDef(sym, quote(x) + "; // unsafe mutable")
+      emitPtrDef(sym, x)
     case _ => super.emitNode(sym, rhs)
   }
 }
@@ -93,13 +108,13 @@ trait CLikeGenObjectOps extends CLikeGenBase {
   import IR._
 
   override def emitNode(sym: Sym[Any], rhs: Def[Any]) = rhs match {
-    case ObjectToString(lhs) => emitValDef(sym, "(" + quote(lhs) + ").toString()")
-    case ObjectUnsafeImmutable(x) => emitValDef(sym, quote(x) + "; // unsafe immutable")
-    case ObjectUnsafeMutable(x) => emitValDef(sym, quote(x) + "; // unsafe mutable")
+    case ObjectToString(x) => emitValDef(sym, src"($x).toString()")
+    case ObjectUnsafeImmutable(x) => emitValDef(sym, src"$x; // unsafe immutable")
+    case ObjectUnsafeMutable(x) => emitValDef(sym, src"$x; // unsafe mutable")
     case _ => super.emitNode(sym, rhs)
   }
 }
 
 trait CudaGenObjectOps extends CudaGenBase with CLikeGenObjectOps
 trait OpenCLGenObjectOps extends OpenCLGenBase with CLikeGenObjectOps
-trait CGenObjectOps extends CGenBase with CLikeGenObjectOps
+trait CGenObjectOps extends CGenBase with CLikeGenObjectOps 
