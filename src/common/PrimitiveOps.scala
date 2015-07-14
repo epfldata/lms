@@ -274,14 +274,18 @@ trait PrimitiveOps extends Variables with OverloadHack {
 
   def infix_&(lhs: Rep[Long], rhs: Rep[Long])(implicit o: Overloaded2, pos: SourceContext) = long_binaryand(lhs, rhs)
   def infix_|(lhs: Rep[Long], rhs: Rep[Long])(implicit o: Overloaded2, pos: SourceContext) = long_binaryor(lhs, rhs)
+  def infix_^(lhs: Rep[Long], rhs: Rep[Long])(implicit o: Overloaded2, pos: SourceContext) = long_binaryxor(lhs, rhs)
   def infix_<<(lhs: Rep[Long], rhs: Rep[Int])(implicit o: Overloaded2, pos: SourceContext) = long_shiftleft(lhs, rhs)
+  def infix_>>(lhs: Rep[Long], rhs: Rep[Int])(implicit pos: SourceContext) = long_shiftright(lhs, rhs)
   def infix_>>>(lhs: Rep[Long], rhs: Rep[Int])(implicit o: Overloaded2, pos: SourceContext) = long_shiftright_unsigned(lhs, rhs)
   def infix_toInt(lhs: Rep[Long])(implicit o: Overloaded2, pos: SourceContext) = long_toint(lhs)
     
   def obj_long_parse_long(s: Rep[String])(implicit pos: SourceContext): Rep[Long]
   def long_binaryand(lhs: Rep[Long], rhs: Rep[Long])(implicit pos: SourceContext): Rep[Long]
   def long_binaryor(lhs: Rep[Long], rhs: Rep[Long])(implicit pos: SourceContext): Rep[Long]
+  def long_binaryxor(lhs: Rep[Long], rhs: Rep[Long])(implicit pos: SourceContext): Rep[Long]
   def long_shiftleft(lhs: Rep[Long], rhs: Rep[Int])(implicit pos: SourceContext): Rep[Long]
+  def long_shiftright(lhs: Rep[Long], rhs: Rep[Int])(implicit pos: SourceContext): Rep[Long]
   def long_shiftright_unsigned(lhs: Rep[Long], rhs: Rep[Int])(implicit pos: SourceContext): Rep[Long]
   def long_toint(lhs: Rep[Long])(implicit pos: SourceContext): Rep[Int]
 }
@@ -406,15 +410,19 @@ trait PrimitiveOpsExp extends PrimitiveOps with EffectExp {
    */
   case class ObjLongParseLong(s: Exp[String]) extends Def[Long]
   case class LongBinaryOr(lhs: Exp[Long], rhs: Exp[Long]) extends Def[Long]
+  case class LongBinaryXor(lhs: Exp[Long], rhs: Exp[Long]) extends Def[Long]
   case class LongBinaryAnd(lhs: Exp[Long], rhs: Exp[Long]) extends Def[Long]
   case class LongShiftLeft(lhs: Exp[Long], rhs: Exp[Int]) extends Def[Long]
+  case class LongShiftRight(lhs: Exp[Long], rhs: Exp[Int]) extends Def[Long]
   case class LongShiftRightUnsigned(lhs: Exp[Long], rhs: Exp[Int]) extends Def[Long]
   case class LongToInt(lhs: Exp[Long]) extends Def[Int]
 
   def obj_long_parse_long(s: Exp[String])(implicit pos: SourceContext) = ObjLongParseLong(s)
   def long_binaryor(lhs: Exp[Long], rhs: Exp[Long])(implicit pos: SourceContext) = LongBinaryOr(lhs,rhs)
+  def long_binaryxor(lhs: Exp[Long], rhs: Exp[Long])(implicit pos: SourceContext) = LongBinaryXor(lhs,rhs)
   def long_binaryand(lhs: Exp[Long], rhs: Exp[Long])(implicit pos: SourceContext) = LongBinaryAnd(lhs,rhs)  
   def long_shiftleft(lhs: Exp[Long], rhs: Exp[Int])(implicit pos: SourceContext) = LongShiftLeft(lhs,rhs)
+  def long_shiftright(lhs: Exp[Long], rhs: Exp[Int])(implicit pos: SourceContext) = LongShiftRight(lhs,rhs)
   def long_shiftright_unsigned(lhs: Exp[Long], rhs: Exp[Int])(implicit pos: SourceContext) = LongShiftRightUnsigned(lhs,rhs)
   def long_toint(lhs: Exp[Long])(implicit pos: SourceContext) = LongToInt(lhs)
     
@@ -462,7 +470,9 @@ trait PrimitiveOpsExp extends PrimitiveOps with EffectExp {
       case IntShiftRightArith(x,y) => int_rightshiftarith(f(x),f(y))
       case ObjLongParseLong(x) => obj_long_parse_long(f(x))
       case LongShiftLeft(x,y) => long_shiftleft(f(x),f(y))
+      case LongShiftRight(x,y) => long_shiftright(f(x),f(y))
       case LongBinaryOr(x,y) => long_binaryor(f(x),f(y))
+      case LongBinaryXor(x,y) => long_binaryand(f(x),f(y))
       case LongBinaryAnd(x,y) => long_binaryand(f(x),f(y))
       case LongToInt(x) => long_toint(f(x))
       case LongShiftRightUnsigned(x,y) => long_shiftright_unsigned(f(x),f(y))
@@ -606,8 +616,10 @@ trait ScalaGenPrimitiveOps extends ScalaGenBase {
     case IntToDouble(lhs) => emitValDef(sym, quote(lhs) + ".toDouble")
     case ObjLongParseLong(s) => emitValDef(sym, "java.lang.Long.parseLong(" + quote(s) + ")")
     case LongBinaryOr(lhs,rhs) => emitValDef(sym, quote(lhs) + " | " + quote(rhs))
+    case LongBinaryXor(lhs,rhs) => emitValDef(sym, quote(lhs) + " ^ " + quote(rhs))
     case LongBinaryAnd(lhs,rhs) => emitValDef(sym, quote(lhs) + " & " + quote(rhs))    
     case LongShiftLeft(lhs,rhs) => emitValDef(sym, quote(lhs) + " << " + quote(rhs))
+    case LongShiftRight(lhs,rhs) => emitValDef(sym, quote(lhs) + " >> " + quote(rhs))
     case LongShiftRightUnsigned(lhs,rhs) => emitValDef(sym, quote(lhs) + " >>> " + quote(rhs))    
     case LongToInt(lhs) => emitValDef(sym, quote(lhs) + ".toInt")
     case _ => super.emitNode(sym, rhs)

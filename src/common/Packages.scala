@@ -15,14 +15,22 @@ trait LiftScala extends LiftAll with LiftVariables with LiftEquals {
 trait ScalaOpsPkg extends Base
     with ImplicitOps with NumericOps with FractionalOps with OrderingOps with StringOps
     with RangeOps with IOOps with ArrayOps with BooleanOps with PrimitiveOps with MiscOps
-    with Equal with IfThenElse with Variables with While with TupleOps with ListOps
+    with TupledFunctions with Equal with IfThenElse with Variables with While with ListOps
     with SeqOps with MathOps with CastingOps with SetOps with ObjectOps with ArrayBufferOps
+    with DateOps with GregorianCalendarOps with SimpleDateFormatOps with UncheckedOps with TupleOps
 
 trait ScalaOpsPkgExp extends ScalaOpsPkg
     with ImplicitOpsExp with NumericOpsExp with FractionalOpsExp with OrderingOpsExp with StringOpsExp
     with RangeOpsExp with IOOpsExp with ArrayOpsExp with BooleanOpsExp with PrimitiveOpsExp with MiscOpsExp
-    with FunctionsExp with EqualExp with IfThenElseExp with VariablesExp with WhileExp with TupleOpsExp with ListOpsExp
+    with TupledFunctionsRecursiveExp with EqualExp with IfThenElseExp with VariablesExp with WhileExp with ListOpsExp
     with SeqOpsExp with DSLOpsExp with MathOpsExp with CastingOpsExp with SetOpsExp with ObjectOpsExp with ArrayBufferOpsExp
+    with DateExp with GregorianCalendarExp with SimpleDateFormatExp with UncheckedOpsExp with TupleOpsExp
+
+trait ScalaOpsPkgExpOpt extends ScalaOpsPkgExp
+    with NumericOpsExpOpt
+    with ArrayOpsExpOpt with ListOpsExpOpt
+    with EqualExpOpt with IfThenElseExpOpt with VariablesExpOpt with WhileExpOpt
+    with DateExpOpt with GregorianCalendarExpOpt with SimpleDateFormatExpOpt with ObjectOpsExpOpt
 
 
 /**
@@ -34,10 +42,11 @@ trait ScalaOpsPkgExp extends ScalaOpsPkg
 // Scala
 trait ScalaCodeGenPkg extends ScalaGenImplicitOps with ScalaGenNumericOps with ScalaGenFractionalOps with ScalaGenOrderingOps
     with ScalaGenStringOps with ScalaGenRangeOps with ScalaGenIOOps with ScalaGenArrayOps with ScalaGenBooleanOps
-    with ScalaGenPrimitiveOps with ScalaGenMiscOps with ScalaGenFunctions with ScalaGenEqual with ScalaGenIfThenElse
+    with ScalaGenPrimitiveOps with ScalaGenMiscOps with ScalaGenTupledFunctions with ScalaGenEqual with ScalaGenIfThenElse
     with ScalaGenVariables with ScalaGenWhile with ScalaGenTupleOps with ScalaGenListOps
     with ScalaGenSeqOps with ScalaGenDSLOps with ScalaGenMathOps with ScalaGenCastingOps with ScalaGenSetOps
-    with ScalaGenObjectOps with ScalaGenArrayBufferOps
+    with ScalaGenObjectOps with ScalaGenArrayBufferOps with ScalaGenDate with ScalaGenGregorianCalendar
+    with ScalaGenSimpleDateFormat with ScalaGenUncheckedOps
   { val IR: ScalaOpsPkgExp  }
 
 

@@ -54,6 +54,7 @@ trait StringOps extends Variables with OverloadHack {
   def infix_toInt(s: Rep[String])(implicit pos: SourceContext) = string_toint(s)
   def infix_toLong(s: Rep[String])(implicit pos: SourceContext) = string_tolong(s)
   def infix_substring(s: Rep[String], start: Rep[Int], end: Rep[Int])(implicit pos: SourceContext) = string_substring(s,start,end)
+  def infix_substring(s: Rep[String], start: Rep[Int])(implicit pos: SourceContext) = string_substring(s, start)
 
   // FIXME: enabling this causes trouble with DeliteOpSuite. investigate!!
   //def infix_length(s: Rep[String])(implicit pos: SourceContext) = string_length(s)
@@ -75,6 +76,7 @@ trait StringOps extends Variables with OverloadHack {
   def string_toint(s: Rep[String])(implicit pos: SourceContext): Rep[Int]
   def string_tolong(s: Rep[String])(implicit pos: SourceContext): Rep[Long]
   def string_substring(s: Rep[String], start:Rep[Int], end:Rep[Int])(implicit pos: SourceContext): Rep[String]
+  def string_substring(s: Rep[String], start: Rep[Int])(implicit pos: SourceContext): Rep[String]
   def string_length(s: Rep[String])(implicit pos: SourceContext): Rep[Int]
 }
 
@@ -92,6 +94,7 @@ trait StringOpsExp extends StringOps with VariablesExp {
   case class StringContains(s1: Exp[String], s2: Exp[String]) extends Def[Boolean]
   case class StringToLong(s: Exp[String]) extends Def[Long]
   case class StringSubstring(s: Exp[String], start:Exp[Int], end:Exp[Int]) extends Def[String]
+  case class StringSubstringWithoutEndIndex(s: Exp[String], start: Exp[Int]) extends Def[String]
   case class StringLength(s: Exp[String]) extends Def[Int]
 
   def string_plus(s: Exp[Any], o: Exp[Any])(implicit pos: SourceContext): Rep[String] = StringPlus(s,o)
@@ -107,6 +110,7 @@ trait StringOpsExp extends StringOps with VariablesExp {
   def string_toint(s: Rep[String])(implicit pos: SourceContext) = StringToInt(s)
   def string_tolong(s: Rep[String])(implicit pos: SourceContext) = StringToLong(s)
   def string_substring(s: Rep[String], start:Rep[Int], end:Rep[Int])(implicit pos: SourceContext) = StringSubstring(s,start,end)
+  def string_substring(s: Rep[String], start:Rep[Int])(implicit pos: SourceContext) = StringSubstringWithoutEndIndex(s,start)
   def string_length(s: Rep[String])(implicit pos: SourceContext) = StringLength(s)
 
   override def mirror[A:Manifest](e: Def[A], f: Transformer)(implicit pos: SourceContext): Exp[A] = (e match {
@@ -122,6 +126,7 @@ trait StringOpsExp extends StringOps with VariablesExp {
     case StringValueOf(a) => string_valueof(f(a))
     case StringContains(s1,s2) => string_contains(f(s1),f(s2))
     case StringSubstring(s,a,b) => string_substring(f(s),f(a),f(b))
+    case StringSubstringWithoutEndIndex(s,a) => string_substring(f(s), f(a))
     case StringLength(s) => string_length(f(s))
     case _ => super.mirror(e,f)
   }).asInstanceOf[Exp[A]]
@@ -145,6 +150,7 @@ trait ScalaGenStringOps extends ScalaGenBase {
     case StringToLong(s) => emitValDef(sym, src"$s.toLong")
     case StringContains(s1,s2) => emitValDef(sym, "%s.contains(%s)".format(quote(s1),quote(s2)))
     case StringSubstring(s,a,b) => emitValDef(sym, src"$s.substring($a,$b)")
+    case StringSubstringWithoutEndIndex(s,a) => emitValDef(sym, src"$s.substring($a)")
     case StringLength(s) => emitValDef(sym, src"$s.length")
     case _ => super.emitNode(sym, rhs)
   }
