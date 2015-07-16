@@ -14,7 +14,7 @@ import org.dbtoaster.dbtoasterlib.K3Collection._
 
 trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContainerOps with SimpleValOps with NumericOps
   with OrderingOps with PrimitiveOps with Equal
-  with StructOps with MiscOps with ArrayOps {
+  with StructOps with MiscOps with ArrayOps with TupleExternalOps {
 
   def VWAPonInsertBIDS(var_BIDS_T: Rep[Double], var_BIDS_ID: Rep[Long], var_BIDS_BROKER_ID: Rep[Long], var_BIDS_VOLUME: Rep[Double], var_BIDS_PRICE: Rep[Double], VWAP_orig : Rep[SimpleVal[Double]], VWAP_mBIDS1_orig : Rep[K3PersistentCollection[(Double), Double]], VWAP_mBIDS1_L1_1_orig : Rep[SimpleVal[Double]], VWAP_mBIDS1_L2_1_orig : Rep[K3PersistentCollection[(Double), Double]]) {
     val VWAP = VWAP_orig.mutable;
@@ -41,10 +41,10 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
         {
           val nv = {
             val an1 = (if((var_existing_out_tier).contains((var_BIDS_PRICE))) {
-              (var_existing_out_tier).lookup((var_BIDS_PRICE)) 
+              (var_existing_out_tier).lookup((var_BIDS_PRICE))
             }
             else {
-              unit(0.0) 
+              unit(0.0)
             }
             );
 
@@ -87,10 +87,10 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
         {
           val nv = {
             val an3 = (if((var_existing_out_tier).contains((var_BIDS_PRICE))) {
-              (var_existing_out_tier).lookup((var_BIDS_PRICE)) 
+              (var_existing_out_tier).lookup((var_BIDS_PRICE))
             }
             else {
-              unit(0.0) 
+              unit(0.0)
             }
             );
 
@@ -123,7 +123,7 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
             ((var___prod_ret__2),(unit(1L)))
           };
 
-          newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2)) 
+          newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2))
         }
         .map((y:Rep[Tuple2[(Double),Long]]) => {
           val v = ({
@@ -146,19 +146,19 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                       an6 * bn6
                     }
-                    )) 
+                    ))
                   }
                 }
                 )(y);
 
-                make_tuple2(make_tuple2(v._1,v._2), v._3) 
+                make_tuple2(make_tuple2(v._1,v._2), v._3)
               }
-              ) 
+              )
             }
           }
           )(y);
 
-          v 
+          v
         }
         )).flatten[Tuple2[Double,Double], Double].map((y:Rep[Tuple2[Tuple2[Double,Double],Double]]) => {
           val v = ({
@@ -191,12 +191,12 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                           an8 * bn8
                         }
-                        )) 
+                        ))
                       }
                     }
                     )(y);
 
-                    make_tuple2((v._1), v._2) 
+                    make_tuple2((v._1), v._2)
                   }
                   ).fold(unit(0.0), {
                     (x:Rep[Tuple2[((Double)), Double]]) => {
@@ -221,7 +221,7 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
                   ((var___prod_ret__3),(unit(1L)))
                 };
 
-                newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2)) 
+                newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2))
               }
               .map((y:Rep[Tuple2[(Double),Long]]) => {
                 val v: Rep[Tuple4[Double,Double,Double,Double]] = ({
@@ -237,19 +237,19 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                       an9 * bn9
                     }
-                    )) 
+                    ))
                   }
                 }
                 )(y);
 
-                make_tuple2(make_tuple3(v._1,v._2,v._3), v._4) 
+                make_tuple2(make_tuple3(v._1,v._2,v._3), v._4)
               }
-              ) 
+              )
             }
           }
           )(y);
 
-          v 
+          v
         }
         )).flatten[Tuple3[Double,Double,Double], Double].map((y:Rep[Tuple2[Tuple3[Double,Double,Double],Double]]) => {
           val v: Rep[Tuple4[Double,Double,Double,Double]] = ({
@@ -276,12 +276,12 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                 an10 * bn10
               }
-              )) 
+              ))
             }
           }
           )(y);
 
-          make_tuple2(make_tuple3(v._1,v._2,v._3), v._4) 
+          make_tuple2(make_tuple3(v._1,v._2,v._3), v._4)
         }
         ).fold(unit(0.0), {
           (x:Rep[Tuple2[(Tuple3[Double,Double,Double]), Double]]) => {
@@ -351,10 +351,10 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
         {
           val nv = {
             val an14 = (if((var_existing_out_tier).contains((var_BIDS_PRICE))) {
-              (var_existing_out_tier).lookup((var_BIDS_PRICE)) 
+              (var_existing_out_tier).lookup((var_BIDS_PRICE))
             }
             else {
-              unit(0.0) 
+              unit(0.0)
             }
             );
 
@@ -409,10 +409,10 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
         {
           val nv = {
             val an18 = (if((var_existing_out_tier).contains((var_BIDS_PRICE))) {
-              (var_existing_out_tier).lookup((var_BIDS_PRICE)) 
+              (var_existing_out_tier).lookup((var_BIDS_PRICE))
             }
             else {
-              unit(0.0) 
+              unit(0.0)
             }
             );
 
@@ -445,7 +445,7 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
             ((var___prod_ret__11),(unit(1L)))
           };
 
-          newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2)) 
+          newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2))
         }
         .map((y:Rep[Tuple2[(Double),Long]]) => {
           val v = ({
@@ -468,19 +468,19 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                       an21 * bn21
                     }
-                    )) 
+                    ))
                   }
                 }
                 )(y);
 
-                make_tuple2(make_tuple2(v._1,v._2), v._3) 
+                make_tuple2(make_tuple2(v._1,v._2), v._3)
               }
-              ) 
+              )
             }
           }
           )(y);
 
-          v 
+          v
         }
         )).flatten[Tuple2[Double,Double], Double].map((y:Rep[Tuple2[Tuple2[Double,Double],Double]]) => {
           val v = ({
@@ -513,12 +513,12 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                           an23 * bn23
                         }
-                        )) 
+                        ))
                       }
                     }
                     )(y);
 
-                    make_tuple2((v._1), v._2) 
+                    make_tuple2((v._1), v._2)
                   }
                   ).fold(unit(0.0), {
                     (x:Rep[Tuple2[((Double)), Double]]) => {
@@ -543,7 +543,7 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
                   ((var___prod_ret__12),(unit(1L)))
                 };
 
-                newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2)) 
+                newSingletonK3IntermediateCollection[(Double), Long](Tuple2((v._1),v._2))
               }
               .map((y:Rep[Tuple2[(Double),Long]]) => {
                 val v: Rep[Tuple4[Double,Double,Double,Double]] = ({
@@ -559,19 +559,19 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                       an24 * bn24
                     }
-                    )) 
+                    ))
                   }
                 }
                 )(y);
 
-                make_tuple2(make_tuple3(v._1,v._2,v._3), v._4) 
+                make_tuple2(make_tuple3(v._1,v._2,v._3), v._4)
               }
-              ) 
+              )
             }
           }
           )(y);
 
-          v 
+          v
         }
         )).flatten[Tuple3[Double,Double,Double], Double].map((y:Rep[Tuple2[Tuple3[Double,Double,Double],Double]]) => {
           val v: Rep[Tuple4[Double,Double,Double,Double]] = ({
@@ -598,12 +598,12 @@ trait TupledGeneratorHugeProg extends K3PersistentCollectionOps with ListContain
 
                 an25 * bn25
               }
-              )) 
+              ))
             }
           }
           )(y);
 
-          make_tuple2(make_tuple3(v._1,v._2,v._3), v._4) 
+          make_tuple2(make_tuple3(v._1,v._2,v._3), v._4)
         }
         ).fold(unit(0.0), {
           (x:Rep[Tuple2[(Tuple3[Double,Double,Double]), Double]]) => {
@@ -646,12 +646,12 @@ class TestTupledGeneratorHuge extends FileDiffSuite {
 
   val prefix = "test-out/epfl/test15-"
 
-  def testgenerator2 = {
+  it("testgenerator2") {
     withOutFile(prefix+"tupled-generator-huge"){
        new TupledGeneratorHugeProg with GeneratorOpsExp with NumericOpsExp
         with OrderingOpsExp with PrimitiveOpsExp with EqualExp
         with StructExp with StructExpOptCommon with ArrayOpsExp
-        with MiscOpsExp with ScalaCompile with K3PersistentCollectionExp
+        with MiscOpsExp with TupleExternalOpsExp with ScalaCompile with K3PersistentCollectionExp
         with ListContainerExp with SimpleValExp with ExtendedExpressions { self =>
 
         val printWriter = new java.io.PrintWriter(System.out)
@@ -661,9 +661,9 @@ class TestTupledGeneratorHuge extends FileDiffSuite {
           with ScalaGenOrderingOps with ScalaGenPrimitiveOps with ScalaGenEqual
           with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps
           with ScalaGenK3PersistentCollection with ScalaGenListContainer
-          with ScalaGenSimpleVal with ScalaConciseCodegen{ val IR: self.type = self }
+          with ScalaGenTupleExternalOps with ScalaGenSimpleVal with ScalaConciseCodegen{ val IR: self.type = self }
 
-        
+
 
         codegen.emitSource9(VWAPonInsertBIDS _ , "VWAPonInsertBIDS", printWriter)
         codegen.emitDataStructures(printWriter)

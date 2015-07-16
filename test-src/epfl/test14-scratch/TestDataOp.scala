@@ -185,8 +185,8 @@ class TestDataOp extends FileDiffSuite {
     emitAll()
   }
 
-  
-  def testDataOp1 = {
+
+  it("testDataOp1") {
     withOutFile(prefix+"dataop1") {
       trait Prog extends DSL {
         toplevel("main") { x: Rep[Int] =>
@@ -208,7 +208,7 @@ class TestDataOp extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"dataop1")
   }
 
-  def testDataOp2 = {
+  it("testDataOp2") {
     withOutFile(prefix+"dataop2") {
       trait Prog extends DSL {
         toplevel("main") { x: Rep[Int] =>
@@ -231,7 +231,7 @@ class TestDataOp extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"dataop2")
   }
 
-  def testDataOp3 = {
+  it("testDataOp3") {
     withOutFile(prefix+"dataop3") {
       trait Prog extends DSL {
         toplevel("main") { x: Rep[Int] =>

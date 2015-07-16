@@ -172,9 +172,9 @@ class TestForward1 extends FileDiffSuite {
       iter(10,b1) // fixed num of iterations for now
     }
   }
-  
-  
-  def testWorklist1 = withOutFileChecked(prefix+"worklist1") {
+
+
+  it("testWorklist1") { withOutFileChecked(prefix+"worklist1") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val z = vzeros(100)
@@ -185,9 +185,9 @@ class TestForward1 extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testWorklist2 = withOutFileChecked(prefix+"worklist2") {
+  it("testWorklist2") { withOutFileChecked(prefix+"worklist2") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val z = vzeros(100)
@@ -197,9 +197,9 @@ class TestForward1 extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testWorklist3 = withOutFileChecked(prefix+"worklist3") {
+  it("testWorklist3") { withOutFileChecked(prefix+"worklist3") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val z1 = vzeros(100)
@@ -211,6 +211,6 @@ class TestForward1 extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 }

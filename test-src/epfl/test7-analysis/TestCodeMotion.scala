@@ -168,7 +168,7 @@ class TestCodemotion extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test7-"
   
-  def testCodemotion1 = {
+  it("testCodemotion1") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion1") {
       new NestLambdaProg1 with ArithExp with FunctionsExp with PrintExp { self =>
@@ -179,7 +179,7 @@ class TestCodemotion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"codemotion1")
   }
 
-  def testCodemotion2 = {
+  it("testCodemotion2") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion2") {
       new NestCondProg2 with ArithExp with FunctionsExp with IfThenElseExp with PrintExp { self =>
@@ -190,7 +190,7 @@ class TestCodemotion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"codemotion2")
   }
 
-  def testCodemotion3 = {
+  it("testCodemotion3") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion3") {
       new NestCondProg3 with ArithExp with FunctionsExp with IfThenElseExp with PrintExp { self =>
@@ -201,7 +201,7 @@ class TestCodemotion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"codemotion3")
   }
 
-  def testCodemotion4 = {
+  it("testCodemotion4") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion4") {
       new NestCondProg4 with ArithExp with FunctionsExp with IfThenElseExp with PrintExp { self =>
@@ -212,7 +212,7 @@ class TestCodemotion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"codemotion4")
   }
 
-  def testCodemotion5 = {
+  it("testCodemotion5") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion5") {
       new NestCondProg5 with ArithExp with FunctionsExp with IfThenElseExp with PrintExp { self =>
@@ -223,7 +223,7 @@ class TestCodemotion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"codemotion5")
   }
 
-  def testCodemotion6 = {
+  it("testCodemotion6") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion6") {
       new NestCondProg6 with ArithExp with FunctionsExp with IfThenElseExp with PrintExp { self =>
@@ -236,7 +236,7 @@ class TestCodemotion extends FileDiffSuite {
     // assertFileEqualsCheck(prefix+"codemotion6")
   }
 
-  def testCodemotion7 = {
+  it("testCodemotion7") {
     // test loop hoisting (should use loops but lambdas will do for now)
     withOutFile(prefix+"codemotion7") {
       new NestCondProg7 with ArithExp with OrderingOpsExp with FunctionsExp with IfThenElseExp with PrintExp { self =>

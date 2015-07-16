@@ -4,8 +4,8 @@ package epfl
 import java.io.{PrintStream,File,FileInputStream,FileOutputStream,ByteArrayOutputStream}
 import org.scalatest._
 
+trait FileDiffSuite extends FunSpec {
 
-trait FileDiffSuite extends Suite {
   val home = sys.env.get("LMS_HOME").map(_ + "/").getOrElse("")
 
   def withOutFile(name: String)(func: => Unit): Unit = {

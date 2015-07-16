@@ -14,7 +14,7 @@ import org.dbtoaster.dbtoasterlib.K3Collection._
 
 trait ExtendedGeneratorOps extends GeneratorOps with NumericOps
   with OrderingOps with PrimitiveOps with Equal with RangeOps
-  with StructOps with MiscOps with ArrayOps with BooleanOps {
+  with StructOps with MiscOps with ArrayOps with BooleanOps with TupleExternalOps {
   object Gen {
     def fSeq[A:Manifest](xs: Rep[A]*)(implicit pos: SourceContext) = fromSeq(xs)
   }
@@ -302,19 +302,19 @@ class TestGeneratorOps extends FileDiffSuite {
 
   val prefix = "test-out/epfl/test15-"
 
-  def testgenerator1 = {
+  it("testgenerator1") {
     withOutFile(prefix+"generator-simple"){
        new GeneratorProg with GeneratorOpsExp with NumericOpsExp
         with OrderingOpsExp with PrimitiveOpsExp with EqualExp with BooleanOpsExp
         with StructExp with StructExpOptCommon with ArrayOpsExp with RangeOpsExp
-        with MiscOpsExp with ScalaCompile with K3PersistentCollectionExp{ self =>
+        with MiscOpsExp with TupleExternalOpsExp with ScalaCompile with K3PersistentCollectionExp{ self =>
 
         val printWriter = new java.io.PrintWriter(System.out)
 
         //test1: first "loop"
         val codegen = new ScalaGenGeneratorOps with ScalaGenNumericOps with ScalaGenOrderingOps
           with ScalaGenPrimitiveOps with ScalaGenEqual with ScalaGenBooleanOps with ScalaGenRangeOps
-          with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps with ScalaGenK3PersistentCollection{ val IR: self.type = self }
+          with ScalaGenTupleExternalOps with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps with ScalaGenK3PersistentCollection{ val IR: self.type = self }
 
         codegen.emitSource2(test1 _ , "test1", printWriter)
         codegen.emitDataStructures(printWriter)
@@ -384,20 +384,18 @@ class TestGeneratorOps extends FileDiffSuite {
   }
 
 
-  def testgenerator2 = {
+  it("testgenerator2") {
     withOutFile(prefix+"generator-array"){
        new ArrayProg with GeneratorOpsExp with NumericOpsExp
-        with OrderingOpsExp with PrimitiveOpsExp with EqualExp with BooleanOpsExp
-        with StructExp with StructExpOptCommon with ArrayOpsExp with RangeOpsExp
-        with MiscOpsExp with TupleOpsExp with ScalaCompile with K3PersistentCollectionExp{ self =>
+        with OrderingOpsExp with PrimitiveOpsExp with EqualExp with BooleanOpsExp with ArrayOpsExp with RangeOpsExp
+        with MiscOpsExp with TupleExternalOpsExp with ScalaCompile with K3PersistentCollectionExp{ self =>
 
         val printWriter = new java.io.PrintWriter(System.out)
 
         //test1: mat mult
-        val codegen = new ScalaGenGeneratorOps with ScalaGenNumericOps
-          with ScalaGenOrderingOps with ScalaGenPrimitiveOps with ScalaGenEqual
-          with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps with ScalaGenRangeOps
-          with ScalaGenTupleOps with ScalaGenK3PersistentCollection{ val IR: self.type = self }
+        val codegen = new ScalaGenGeneratorOps with ScalaGenNumericOps with ScalaGenOrderingOps
+          with ScalaGenPrimitiveOps with ScalaGenEqual with ScalaGenBooleanOps with ScalaGenRangeOps
+          with ScalaGenTupleExternalOps with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps with ScalaGenK3PersistentCollection{ val IR: self.type = self }
 
         codegen.emitSource2(testMul _ , "testMul", printWriter)
         codegen.emitDataStructures(printWriter)

@@ -37,7 +37,7 @@ class TestSpeculative extends FileDiffSuite {
     f(7)
   }
   
-  def testSpeculative1 = {
+  it("testSpeculative1") {
     withOutFile(prefix+"speculative1") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -56,7 +56,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative1")
   }
 
-  def testSpeculative1b = {
+  it("testSpeculative1b") {
     withOutFile(prefix+"speculative1b") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -76,7 +76,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative1b")
   }
 
-  def testSpeculative1c = {
+  it("testSpeculative1c") {
     withOutFile(prefix+"speculative1c") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -96,7 +96,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative1c")
   }
 
-  def testSpeculative1d = {
+  it("testSpeculative1d") {
     withOutFile(prefix+"speculative1d") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -119,7 +119,7 @@ class TestSpeculative extends FileDiffSuite {
   }
 
   
-  def testSpeculative3 = {
+  it("testSpeculative3") {
     withOutFile(prefix+"speculative3") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -142,7 +142,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative3")
   }
 
-  def testSpeculative3b = {
+  it("testSpeculative3b") {
     withOutFile(prefix+"speculative3b") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -167,7 +167,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative3b")
   }
 
-  def testSpeculative4 = {
+  it("testSpeculative4") {
     withOutFile(prefix+"speculative4") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -184,7 +184,7 @@ class TestSpeculative extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"speculative4")
   }
   
-  def testSpeculative5 = {
+  it("testSpeculative5") {
     withOutFile(prefix+"speculative5") {
      // test simple copy propagation through variable
       trait Prog extends DSL {
@@ -210,7 +210,7 @@ class TestSpeculative extends FileDiffSuite {
   // FIXME: this one breaks. Variable j is lifted to
   // top scope because it is not part of the mayWrite
   // summary of the inner loop.
-  def testSpeculative6 = {
+  it("testSpeculative6") {
     withOutFile(prefix+"speculative6") {
      // test simple copy propagation through variable
       trait Prog extends DSL {

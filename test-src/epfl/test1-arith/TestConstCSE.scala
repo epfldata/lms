@@ -19,7 +19,7 @@ class TestConstCSE extends FileDiffSuite {
    * "equals" method implementation (and its comments) for Const
    * class inside Expressions trait.
    */
-  def testBugConstCSE1 = {
+  it("testBugConstCSE1") {
     withOutFile(prefix+"constcse1") {
       trait Prog extends ScalaOpsPkg {
         def test1(test_param: Rep[Boolean], acc: Rep[Long]): Rep[Long] = {

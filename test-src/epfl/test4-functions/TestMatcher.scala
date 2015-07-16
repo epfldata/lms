@@ -56,7 +56,8 @@ class TestMatcher extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test4-"
   
-  def testMatcher1 = {
+  it("testMatcher1") {
+
     withOutFile(prefix+"matcher1") {
       object MatcherProgExp extends MatcherProg with Matching with Extractors with ListMatch
         with MatchingExtractorsExpOpt

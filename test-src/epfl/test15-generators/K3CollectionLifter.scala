@@ -167,7 +167,7 @@ trait ScalaGenK3PersistentCollection extends ScalaGenBase with GenericNestedCode
   }
 }
 
-trait K3PersistentCollectionExpOpt extends BaseExp with NestedGraphTraversal with K3PersistentCollectionExp with IfThenElseExp with TupleOpsExp { self =>
+trait K3PersistentCollectionExpOpt extends BaseExp with NestedGraphTraversal with K3PersistentCollectionExp with IfThenElseExp with TupleExternalOpsExp { self =>
   val IR: self.type = self
   import IR._
 
@@ -185,285 +185,285 @@ trait K3PersistentCollectionExpOpt extends BaseExp with NestedGraphTraversal wit
     case _ => super.mirrorDef(e,f)
   }).asInstanceOf[Def[A]]
 
-  // override def __ifThenElse[T:Manifest](cond: Exp[Boolean], thenp: => Exp[T], elsep: => Exp[T])(implicit pos: SourceContext) = {
-  //   val thenpBlk = reifyEffectsHere(thenp)
-  //   val elsepBlk = reifyEffectsHere(elsep)
+  override def __ifThenElse[T:Manifest](cond: Exp[Boolean], thenp: => Exp[T], elsep: => Exp[T])(implicit pos: SourceContext) = {
+    val thenpBlk = reifyEffectsHere(thenp)
+    val elsepBlk = reifyEffectsHere(elsep)
 
-  //   def defaultResGen = ifThenElse(cond,thenpBlk,elsepBlk)
-  //   val thenpStmts = getStatementsInBlock(thenpBlk)
-  //   val numThenpStmts = thenpStmts.size
-  //   val numElsepStmts = numberOfStatementsInBlock(elsepBlk)
-  //   if(numElsepStmts == 1) {
-  //     (numThenpStmts == 2) match {
-  //       case true => cond match {
-  //         case condSym:Sym[_] => Def.unapply(condSym) match {
-  //           case Some(condDef: Def[Any]) => condDef match {
-  //             case Reflect(K3Contains(x, key), _ , _ ) => {
-  //               val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //               thenpStmts.head match {
-  //                 case IR.TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => thenpStmts.tail.head match {
-  //                   case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
-  //                     val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
-  //                     optRes
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case false => (numThenpStmts == 3) match {
-  //         case true => cond match {
-  //           case condSym:Sym[_] => Def.unapply(condSym) match {
-  //             case Some(condDef: Def[Any]) => condDef match {
-  //               case Reflect(K3Contains(x, key), _ , _ ) => {
-  //                 val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //                 val keyAsSym = key.asInstanceOf[IR.Sym[_]]
-  //                 thenpStmts.head match {
-  //                   case IR.TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => thenpStmts.tail.head match {
-  //                     case IR.TP(`keyAsSym`, _) => thenpStmts.tail.tail.head match {
-  //                       case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
-  //                         val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
-  //                         optRes
-  //                       }
-  //                       case other => defaultResGen
-  //                     }
-  //                     case other => defaultResGen
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case false => (numThenpStmts > 3) match {
-  //           case true => {
-  //             val thenpStmtsReverse = thenpStmts.reverse
-  //             cond match {
-  //               case condSym:Sym[_] => Def.unapply(condSym) match {
-  //                 case Some(condDef: Def[Any]) => condDef match {
-  //                   case Reflect(K3Contains(x, key), _ , _ ) => {
-  //                     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //                     thenpStmtsReverse.head match {
-  //                       case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
-  //                         val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
-  //                         optRes
-  //                       }
-  //                       case other => defaultResGen
-  //                     }
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //           }
-  //           case false => defaultResGen
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     defaultResGen
-  //   }
-  // }
+    def defaultResGen = ifThenElse(cond,thenpBlk,elsepBlk)
+    val thenpStmts = getStatementsInBlock(thenpBlk)
+    val numThenpStmts = thenpStmts.size
+    val numElsepStmts = numberOfStatementsInBlock(elsepBlk)
+    if(numElsepStmts == 1) {
+      (numThenpStmts == 2) match {
+        case true => cond match {
+          case condSym:Sym[_] => Def.unapply(condSym) match {
+            case Some(condDef: Def[Any]) => condDef match {
+              case Reflect(K3Contains(x, key), _ , _ ) => {
+                val xAsSym = x.asInstanceOf[IR.Sym[_]]
+                thenpStmts.head match {
+                  case IR.TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => thenpStmts.tail.head match {
+                    case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
+                      val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
+                      optRes
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case false => (numThenpStmts == 3) match {
+          case true => cond match {
+            case condSym:Sym[_] => Def.unapply(condSym) match {
+              case Some(condDef: Def[Any]) => condDef match {
+                case Reflect(K3Contains(x, key), _ , _ ) => {
+                  val xAsSym = x.asInstanceOf[IR.Sym[_]]
+                  val keyAsSym = key.asInstanceOf[IR.Sym[_]]
+                  thenpStmts.head match {
+                    case IR.TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => thenpStmts.tail.head match {
+                      case IR.TP(`keyAsSym`, _) => thenpStmts.tail.tail.head match {
+                        case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
+                          val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
+                          optRes
+                        }
+                        case other => defaultResGen
+                      }
+                      case other => defaultResGen
+                    }
+                    case other => defaultResGen
+                  }
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case false => (numThenpStmts > 3) match {
+            case true => {
+              val thenpStmtsReverse = thenpStmts.reverse
+              cond match {
+                case condSym:Sym[_] => Def.unapply(condSym) match {
+                  case Some(condDef: Def[Any]) => condDef match {
+                    case Reflect(K3Contains(x, key), _ , _ ) => {
+                      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+                      thenpStmtsReverse.head match {
+                        case IR.TP(_, IR.Reflect(IR.K3Lookup(`x`,`key`), u,effects)) => {
+                          val optRes: Exp[T] = /*Reflect(*/K3LookupOrDefault(x, key, elsepBlk.res).asInstanceOf[Def[T]]/*,u, effects)*/
+                          optRes
+                        }
+                        case other => defaultResGen
+                      }
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+            }
+            case false => defaultResGen
+          }
+        }
+      }
+    } else {
+      defaultResGen
+    }
+  }
 
-  // override def k3Foreach[K: Manifest, V: Manifest](x: Exp[K3PersistentCollection[K, V]], fn: => Exp[Tuple2[K, V]] => Exp[Unit]) = {
-  //   val v = fresh[(K,V)]
-  //   val blk = reifyEffects(fn(v))
+  override def k3Foreach[K: Manifest, V: Manifest](x: Exp[K3PersistentCollection[K, V]], fn: => Exp[Tuple2[K, V]] => Exp[Unit]) = {
+    val v = fresh[(K,V)]
+    val blk = reifyEffects(fn(v))
     
-  //   def defaultResGen = reflectEffect(K3Foreach[K,V](x, v, blk), summarizeEffects(blk).star)
+    def defaultResGen = reflectEffect(K3Foreach[K,V](x, v, blk), summarizeEffects(blk).star)
 
-  //   val stmtsInBlk = getStatementsInBlock(blk)
-  //   if(stmtsInBlk.size == 3) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,m) if tuple2_get1(v) == m => stmtsInBlk.tail.tail.head match {
-  //           case TP(_,Reflect(K3Remove(`x`,`collKey`), _, _)) => {
-  //             val optRes: Exp[Unit] = k3Clear(x)
-  //             optRes
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else if(stmtsInBlk.size == 6) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,m1) if tuple2_get1(v) == m1 => stmtsInBlk.tail.tail.head match {
-  //           case TP(tup1,m2) if tuple2_get1(collKey) == m2 => stmtsInBlk.tail.tail.tail.head match {
-  //             case TP(tup2,m3) if tuple2_get2(collKey) == m3 => stmtsInBlk.tail.tail.tail.tail.head match {
-  //               case TP(keyTup,ETuple2(`tup1`,`tup2`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
-  //                 case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
-  //                   val optRes: Exp[Unit] = k3Clear(x)
-  //                   optRes
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else if(stmtsInBlk.size == 7) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
-  //           case TP(tup1,Tuple3Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
-  //             case TP(tup2,Tuple3Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
-  //               case TP(tup3,Tuple3Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
-  //                 case TP(keyTup,ETuple3(`tup1`,`tup2`,`tup3`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
-  //                   case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
-  //                     val optRes: Exp[Unit] = k3Clear(x)
-  //                     optRes
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else if(stmtsInBlk.size == 8) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
-  //           case TP(tup1,Tuple4Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
-  //             case TP(tup2,Tuple4Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
-  //               case TP(tup3,Tuple4Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
-  //                 case TP(tup4,Tuple4Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
-  //                   case TP(keyTup,ETuple4(`tup1`,`tup2`,`tup3`,`tup4`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                     case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
-  //                       val optRes: Exp[Unit] = k3Clear(x)
-  //                       optRes
-  //                     }
-  //                     case other => defaultResGen
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else if(stmtsInBlk.size == 9) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
-  //           case TP(tup1,Tuple5Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
-  //             case TP(tup2,Tuple5Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
-  //               case TP(tup3,Tuple5Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
-  //                 case TP(tup4,Tuple5Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
-  //                   case TP(tup5,Tuple5Access5(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                     case TP(keyTup,ETuple5(`tup1`,`tup2`,`tup3`,`tup4`,`tup5`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                       case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
-  //                         val optRes: Exp[Unit] = k3Clear(x)
-  //                         optRes
-  //                       }
-  //                       case other => defaultResGen
-  //                     }
-  //                     case other => defaultResGen
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else if(stmtsInBlk.size == 10) {
-  //     val xAsSym = x.asInstanceOf[IR.Sym[_]]
-  //     stmtsInBlk.head match {
-  //       case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
-  //         case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
-  //           case TP(tup1,Tuple6Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
-  //             case TP(tup2,Tuple6Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
-  //               case TP(tup3,Tuple6Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
-  //                 case TP(tup4,Tuple6Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
-  //                   case TP(tup5,Tuple6Access5(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                     case TP(tup6,Tuple6Access6(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                       case TP(keyTup,ETuple6(`tup1`,`tup2`,`tup3`,`tup4`,`tup5`,`tup6`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.tail.head match {
-  //                         case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
-  //                           val optRes: Exp[Unit] = k3Clear(x)
-  //                           optRes
-  //                         }
-  //                         case other => defaultResGen
-  //                       }
-  //                       case other => defaultResGen
-  //                     }
-  //                     case other => defaultResGen
-  //                   }
-  //                   case other => defaultResGen
-  //                 }
-  //                 case other => defaultResGen
-  //               }
-  //               case other => defaultResGen
-  //             }
-  //             case other => defaultResGen
-  //           }
-  //           case other => defaultResGen
-  //         }
-  //         case other => defaultResGen
-  //       }
-  //       case other => defaultResGen
-  //     }
-  //   } else {
-  //     defaultResGen
-  //   }
-  // }
+    val stmtsInBlk = getStatementsInBlock(blk)
+    if(stmtsInBlk.size == 3) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(_,Reflect(K3Remove(`x`,`collKey`), _, _)) => {
+              val optRes: Exp[Unit] = k3Clear(x)
+              optRes
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else if(stmtsInBlk.size == 6) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(tup1,Tuple2Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
+              case TP(tup2,Tuple2Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
+                case TP(keyTup,ETuple2(`tup1`,`tup2`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
+                  case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
+                    val optRes: Exp[Unit] = k3Clear(x)
+                    optRes
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else if(stmtsInBlk.size == 7) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(tup1,Tuple3Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
+              case TP(tup2,Tuple3Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
+                case TP(tup3,Tuple3Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
+                  case TP(keyTup,ETuple3(`tup1`,`tup2`,`tup3`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
+                    case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
+                      val optRes: Exp[Unit] = k3Clear(x)
+                      optRes
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else if(stmtsInBlk.size == 8) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(tup1,Tuple4Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
+              case TP(tup2,Tuple4Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
+                case TP(tup3,Tuple4Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
+                  case TP(tup4,Tuple4Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
+                    case TP(keyTup,ETuple4(`tup1`,`tup2`,`tup3`,`tup4`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
+                      case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
+                        val optRes: Exp[Unit] = k3Clear(x)
+                        optRes
+                      }
+                      case other => defaultResGen
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else if(stmtsInBlk.size == 9) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(tup1,Tuple5Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
+              case TP(tup2,Tuple5Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
+                case TP(tup3,Tuple5Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
+                  case TP(tup4,Tuple5Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
+                    case TP(tup5,Tuple5Access5(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
+                      case TP(keyTup,ETuple5(`tup1`,`tup2`,`tup3`,`tup4`,`tup5`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.head match {
+                        case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
+                          val optRes: Exp[Unit] = k3Clear(x)
+                          optRes
+                        }
+                        case other => defaultResGen
+                      }
+                      case other => defaultResGen
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else if(stmtsInBlk.size == 10) {
+      val xAsSym = x.asInstanceOf[IR.Sym[_]]
+      stmtsInBlk.head match {
+        case TP(`xAsSym`, IR.Reflect(IR.K3Mutable(_), _, _)) => stmtsInBlk.tail.head match {
+          case TP(collKey,Tuple2Access1(`v`)) => stmtsInBlk.tail.tail.head match {
+            case TP(tup1,Tuple6Access1(`collKey`)) => stmtsInBlk.tail.tail.tail.head match {
+              case TP(tup2,Tuple6Access2(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.head match {
+                case TP(tup3,Tuple6Access3(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.head match {
+                  case TP(tup4,Tuple6Access4(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.head match {
+                    case TP(tup5,Tuple6Access5(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.head match {
+                      case TP(tup6,Tuple6Access6(`collKey`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.head match {
+                        case TP(keyTup,ETuple6(`tup1`,`tup2`,`tup3`,`tup4`,`tup5`,`tup6`)) => stmtsInBlk.tail.tail.tail.tail.tail.tail.tail.tail.tail.head match {
+                          case TP(_,Reflect(K3Remove(`x`,`keyTup`), _, _)) => {
+                            val optRes: Exp[Unit] = k3Clear(x)
+                            optRes
+                          }
+                          case other => defaultResGen
+                        }
+                        case other => defaultResGen
+                      }
+                      case other => defaultResGen
+                    }
+                    case other => defaultResGen
+                  }
+                  case other => defaultResGen
+                }
+                case other => defaultResGen
+              }
+              case other => defaultResGen
+            }
+            case other => defaultResGen
+          }
+          case other => defaultResGen
+        }
+        case other => defaultResGen
+      }
+    } else {
+      defaultResGen
+    }
+  }
 
-  // def numberOfStatementsInBlock(b: Block[Any]): Int = getStatementsInBlock(b) match {
-  //   case Nil => 1
-  //   case l => l.size
-  // }
+  def numberOfStatementsInBlock(b: Block[Any]): Int = getStatementsInBlock(b) match {
+    case Nil => 1
+    case l => l.size
+  }
 
-  // def getStatementsInBlock(b: Block[Any]): List[IR.Stm] = b.res match {
-  //   case s@Sym(n) => buildScheduleForResult(b.res, false).filter{ x => x match {
-  //       case IR.TP(sym,IR.Reify(_,_,_)) => false
-  //       case _ => true
-  //     }
-  //   }
-  //   case _ => Nil
-  // }
+  def getStatementsInBlock(b: Block[Any]): List[IR.Stm] = b.res match {
+    case s@Sym(n) => buildScheduleForResult(b.res, false).filter{ x => x match {
+        case IR.TP(sym,IR.Reify(_,_,_)) => false
+        case _ => true
+      }
+    }
+    case _ => Nil
+  }
 }

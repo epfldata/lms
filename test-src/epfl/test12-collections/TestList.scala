@@ -35,7 +35,7 @@ class TestList extends FileDiffSuite {
 
   val prefix = home + "test-out/epfl/test12-"
 
-  def testMapFlatMapAndFilter() {
+  it("testMapFlatMapAndFilter") {
     withOutFile(prefix+"map-flatmap-filter") {
       val prog = new MapFlatMapAndFilter with ListOpsExp with NumericOpsExp with PrimitiveOpsExp with OrderingOpsExp
       val codegen = new ScalaGenEffect with ScalaGenListOps with ScalaGenNumericOps with ScalaGenPrimitiveOps with ScalaGenOrderingOps { val IR: prog.type = prog }
@@ -44,7 +44,7 @@ class TestList extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"map-flatmap-filter")
   }
 
-  def testConcat() {
+  it("testConcat") {
     withOutFile(prefix+"concat") {
       val prog = new Concat with ListOpsExpOpt
       val codegen = new ScalaGenEffect with ScalaGenListOps { val IR: prog.type = prog }
@@ -55,7 +55,7 @@ class TestList extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"concat")
   }
 
-  def testMkString() {
+  it("testMkString") {
     withOutFile(prefix+"mkstring") {
       val prog = new MkString with ListOpsExp
       val codegen = new ScalaGenEffect with ScalaGenListOps { val IR: prog.type = prog }

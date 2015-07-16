@@ -200,7 +200,7 @@ class TestVectors extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test6-"
   
-  def testVectors = {
+  it("testVectors") {
     withOutFile(prefix+"vectors") {
     
       println("-- begin")

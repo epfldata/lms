@@ -40,8 +40,8 @@ class TestCGen extends FileDiffSuite {
     emitAll()
   }
 
-  
-  def testCGen1 = {
+
+  it("testCGen1") {
     withOutFile(prefix+"cgen1") {
       trait Prog extends DSL {
         toplevel("main") { x: Rep[Int] =>
@@ -63,7 +63,7 @@ class TestCGen extends FileDiffSuite {
 
   // the generated code will contain nested functions; it needs to be
   // compiled with gcc -fnested-functions
-  def testCGen2 = {
+  it("testCGen2") {
     withOutFile(prefix+"cgen2") {
       trait Prog extends DSL {
         toplevel("main") { x: Rep[Int] =>
@@ -83,7 +83,7 @@ class TestCGen extends FileDiffSuite {
   }
 
 
-  def testCGen3 = {
+  it("testCGen3") {
     withOutFile(prefix+"cgen3") {
       trait Prog extends DSL {
         val main = toplevel("main") { x: Rep[Int] =>

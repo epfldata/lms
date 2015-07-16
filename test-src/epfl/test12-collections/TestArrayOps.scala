@@ -9,7 +9,7 @@ class TestArrayOps extends FileDiffSuite {
 
   val prefix = home + "test-out/epfl/test12-"
 
-  def testIntArrayCreation() {
+  it("testIntArrayCreation") {
     withOutFile(prefix+"array-seq-creation") {
       val prog = new ArrayOps with MiscOps with ArrayOpsExp with MiscOpsExp{
         def f(i : Rep[Int]): Rep[Unit] = {

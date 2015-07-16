@@ -14,7 +14,7 @@ import org.dbtoaster.dbtoasterlib.K3Collection._
 
 trait TupledGeneratorFlattenProg extends K3PersistentCollectionOps with NumericOps
   with OrderingOps with PrimitiveOps with Equal
-  with StructOps with MiscOps with ArrayOps with ListContainerOps{
+  with StructOps with MiscOps with ArrayOps with ListContainerOps with TupleExternalOps{
   def test1(var_BIDS_T: Rep[Double], var_BIDS_ID: Rep[Long], var_BIDS_BROKER_ID: Rep[Long], var_BIDS_VOLUME: Rep[Double], var_BIDS_PRICE: Rep[Double], AXFINDER_orig : Rep[K3PersistentCollection[(Long), Double]], AXFINDER_mASKS1_orig : Rep[K3PersistentCollection[Tuple2[Long,Double], Double]], AXFINDER_mASKS2_orig : Rep[K3PersistentCollection[Tuple2[Long,Double], Long]], AXFINDER_mBIDS1_orig : Rep[K3PersistentCollection[Tuple2[Long,Double], Long]], AXFINDER_mBIDS3_orig : Rep[K3PersistentCollection[Tuple2[Long,Double], Double]]) = {
     val AXFINDER = AXFINDER_orig.mutable;
 
@@ -75,12 +75,12 @@ class TestTupledGeneratorFlatten extends FileDiffSuite {
 
   val prefix = "test-out/epfl/test15-"
 
-  def testgenerator1 = {
+  it("testgenerator1") {
     withOutFile(prefix+"tupled-generator-flatten"){
        new TupledGeneratorFlattenProg with GeneratorOpsExp with NumericOpsExp
         with OrderingOpsExp with PrimitiveOpsExp with EqualExp
         with StructExp with StructExpOptCommon with ArrayOpsExp
-        with MiscOpsExp with ScalaCompile with K3PersistentCollectionExp
+        with MiscOpsExp with TupleExternalOpsExp with ScalaCompile with K3PersistentCollectionExp
         with ListContainerExp with ExtendedExpressions { self =>
 
         val printWriter = new java.io.PrintWriter(System.out)
@@ -89,7 +89,7 @@ class TestTupledGeneratorFlatten extends FileDiffSuite {
         val codegen = new ScalaGenGeneratorOps with ScalaGenNumericOps
           with ScalaGenOrderingOps with ScalaGenPrimitiveOps with ScalaGenEqual
           with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps
-          with ScalaGenK3PersistentCollection with ScalaGenListContainer with ScalaConciseCodegen{ val IR: self.type = self }
+          with ScalaGenTupleExternalOps with ScalaGenK3PersistentCollection with ScalaGenListContainer with ScalaConciseCodegen{ val IR: self.type = self }
 
         codegen.emitSource10(test1 _ , "test1", printWriter)
         codegen.emitDataStructures(printWriter)

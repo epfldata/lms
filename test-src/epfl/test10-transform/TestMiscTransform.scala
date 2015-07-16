@@ -277,7 +277,7 @@ class TestMisc extends FileDiffSuite {
   
   
   // test simple block transform
-  def testMisc1 = withOutFileChecked(prefix+"misc1") {
+  it("testMisc1") { withOutFileChecked(prefix+"misc1") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val z = vzeros(100)
@@ -322,11 +322,11 @@ class TestMisc extends FileDiffSuite {
       codegen.emitBlock(z)
     }
     println("-- done")
-  }
+  }}
 
   // test simple block transform -- failure case when transforming
   // different occurences of same stm in different ways
-  def testMisc2 = withOutFileChecked(prefix+"misc2") {
+  it("testMisc2") { withOutFileChecked(prefix+"misc2") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -388,10 +388,10 @@ class TestMisc extends FileDiffSuite {
       println("error: " + ex)
     }
     println("-- done")
-  }
+  }}
 
   // test better block transform -- fixing above case
-  def testMisc3 = withOutFileChecked(prefix+"misc3") {
+  it("testMisc3") { withOutFileChecked(prefix+"misc3") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -461,11 +461,10 @@ class TestMisc extends FileDiffSuite {
       println("error: " + ex)
     }
     println("-- done")
-  }
-
+  }}
 
   // test mirror block transform -- regain sharing info but mirroring all statements
-  def testMisc4 = withOutFileChecked(prefix+"misc4") {
+  it("testMisc4") { withOutFileChecked(prefix+"misc4") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -538,10 +537,10 @@ class TestMisc extends FileDiffSuite {
       println("error: " + ex)
     }
     println("-- done")
-  }
+  }}
 
   // test mirror block transform -- regain sharing info but mirroring all statements
-  def testMisc5 = withOutFileChecked(prefix+"misc5") {
+  it("testMisc5") { withOutFileChecked(prefix+"misc5") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -613,6 +612,5 @@ class TestMisc extends FileDiffSuite {
       println("error: " + ex)
     }
     println("-- done")
-  }
-
+  }}
 }

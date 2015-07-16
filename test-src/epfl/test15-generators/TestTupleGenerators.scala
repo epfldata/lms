@@ -14,7 +14,7 @@ import org.dbtoaster.dbtoasterlib.K3Collection._
 
 trait TupledGeneratorProg extends K3PersistentCollectionOps with NumericOps
   with OrderingOps with PrimitiveOps with Equal
-  with StructOps with MiscOps with ArrayOps {
+  with StructOps with MiscOps with ArrayOps with TupleExternalOps {
   def test1(MST_mASKS2_E1_1_L2_1 : Rep[K3PersistentCollection[(Double), Double]], MST_mASKS2_E1_1 : Rep[K3PersistentCollection[Tuple2[Long,Double], Double]]) = {
     val var_BIDS_PRICE: Rep[Double] = unit(12.2)
     val _var___prod_ret__30:Rep[Double] = MST_mASKS2_E1_1_L2_1.map((y:Rep[Tuple2[(Double),Double]]) => {
@@ -137,12 +137,12 @@ class TestTupledGeneratorOps extends FileDiffSuite {
 
   val prefix = "test-out/epfl/test15-"
 
-  def testgenerator1 = {
+  it("testgenerator1") {
     withOutFile(prefix+"tupled-generator-simple"){
        new TupledGeneratorProg with GeneratorOpsExp with NumericOpsExp
         with OrderingOpsExp with PrimitiveOpsExp with EqualExp
         with StructExp with StructExpOptCommon with ArrayOpsExp
-        with MiscOpsExp with ScalaCompile with K3PersistentCollectionExp
+        with MiscOpsExp with TupleExternalOpsExp with ScalaCompile with K3PersistentCollectionExp
         with ExtendedExpressions { self =>
 
         val printWriter = new java.io.PrintWriter(System.out)
@@ -151,7 +151,7 @@ class TestTupledGeneratorOps extends FileDiffSuite {
         val codegen = new ScalaGenGeneratorOps with ScalaGenNumericOps
           with ScalaGenOrderingOps with ScalaGenPrimitiveOps with ScalaGenEqual
           with ScalaGenArrayOps with ScalaGenStruct with ScalaGenMiscOps
-          with ScalaGenK3PersistentCollection with ScalaConciseCodegen{ val IR: self.type = self }
+          with ScalaGenTupleExternalOps with ScalaGenK3PersistentCollection with ScalaConciseCodegen{ val IR: self.type = self }
 
         codegen.emitSource2(test1 _ , "test1", printWriter)
         codegen.emitDataStructures(printWriter)

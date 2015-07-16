@@ -96,7 +96,7 @@ class TestConditional extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test5-"
   
-  def testConditional = {
+  it("testConditional") {
     withOutFile(prefix+"conditional") {
     
       println("-- begin")

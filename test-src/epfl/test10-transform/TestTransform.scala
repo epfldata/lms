@@ -107,7 +107,7 @@ class TestTransform extends FileDiffSuite {
   
   
   // test simple block transform
-  def testTransform1 = withOutFileChecked(prefix+"transform1") {
+  it("testTransform1") { withOutFileChecked(prefix+"transform1") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val z = vzeros(100)
@@ -118,9 +118,9 @@ class TestTransform extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testTransform2 = withOutFileChecked(prefix+"transform2") {
+  it("testTransform2") { withOutFileChecked(prefix+"transform2") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -134,9 +134,9 @@ class TestTransform extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testTransform3 = withOutFileChecked(prefix+"transform3") {
+  it("testTransform3") { withOutFileChecked(prefix+"transform3") {
     trait Prog extends DSL with Impl {
       def test(x: Rep[Int]) = {
         val a = vzeros(100) // will be moved into branches
@@ -155,6 +155,6 @@ class TestTransform extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 }

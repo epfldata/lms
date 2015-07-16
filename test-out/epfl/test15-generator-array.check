@@ -1,101 +1,95 @@
 /*****************************************
   Emitting Generated Code                  
 *******************************************/
-class testMul extends ((Array[scala.Tuple2[Int, Int]], Int)=>(Unit)) {
-def apply(x0:Array[scala.Tuple2[Int, Int]], x1:Int): Unit = {
+class testMul extends ((Array[Tuple2[Int,Int]], Int)=>(Unit)) {
+def apply(x0:Array[Tuple2[Int,Int]], x1:Int): Unit = {
 val x2 = x0.length
 val x3 = x2 + 1
 val x4 = x3 * x3
-val x5 = new Array[Recordintintint](x4)
+val x5 = new Array[Anon111043964](x4)
+val x14 = new Anon111043964(0,0,10000)
 var x7 : Int = 1
-val x80 = while (x7 < x3) {
+val x66 = while (x7 < x3) {
 val x8 = x3 - x7
 var x10 : Int = 0
-val x78 = while (x10 < x8) {
-var x15: Int = 0
-var x16: Int = 0
-var x17: Int = 10000
+val x64 = while (x10 < x8) {
+var x15: Anon111043964 = x14
 val x11 = x10 + x7
 val x12 = x10 + 1
-val x19 = x12 == x11
-val x35 = if (x19) {
-val x24 = x15
-val x25 = x16
-val x26 = x17
-val x28 = 0 < x26
-val x33 = if (x28) {
-val x20 = x0(x10)
-val x21 = x20._1
-x15 = x21
-val x22 = x20._2
-x16 = x22
-x17 = 0
+val x16 = x12 == x11
+val x28 = if (x16) {
+val x21 = x15
+val x22 = x21.mults
+val x23 = 0 < x22
+val x26 = if (x23) {
+val x17 = x0(x10)
+val x18 = x17._1
+val x19 = x17._2
+val x20 = new Anon111043964(x18,x19,0)
+x15 = x20
 ()
 } else {
 ()
 }
-x33
+x26
 } else {
 ()
 }
 val x13 = x12 < x11
-val x38 = x10 * x3
-val x70 = if (x13) {
-var x37 : Int = x12
-val x68 = while (x37 < x11) {
-val x39 = x38 + x37
-val x40 = x5(x39)
-val x41 = x37 * x3
-val x42 = x41 + x11
-val x43 = x5(x42)
-val x44 = (x40,x43)
-val x45 = x44._1
-val x46 = x44._2
-val x47 = x45.rows
-val x48 = x46.cols
-val x49 = x45.mults
-val x50 = x46.mults
-val x52 = x45.cols
-val x57 = x15
-val x58 = x16
-val x59 = x17
-val x51 = x49 + x50
-val x53 = x47 * x52
-val x54 = x53 * x48
-val x55 = x51 + x54
-val x61 = x55 < x59
-val x66 = if (x61) {
-x15 = x47
-x16 = x48
-x17 = x55
+val x31 = x10 * x3
+val x59 = if (x13) {
+var x30 : Int = x12
+val x57 = while (x30 < x11) {
+val x32 = x31 + x30
+val x33 = x5(x32)
+val x34 = x30 * x3
+val x35 = x34 + x11
+val x36 = x5(x35)
+val x37 = (x33,x36)
+val x38 = x37._1
+val x39 = x37._2
+val x40 = x38.rows
+val x41 = x39.cols
+val x42 = x38.mults
+val x43 = x39.mults
+val x45 = x38.cols
+val x50 = x15
+val x44 = x42 + x43
+val x46 = x40 * x45
+val x47 = x46 * x41
+val x48 = x44 + x47
+val x51 = x50.mults
+val x52 = x48 < x51
+val x55 = if (x52) {
+val x49 = new Anon111043964(x40,x41,x48)
+x15 = x49
 ()
 } else {
 ()
 }
-x37 = x37 + 1
+
+x30 = x30 + 1
 }
-x68
+x57
 } else {
 ()
 }
-val x72 = x15
-val x73 = x16
-val x74 = x17
-val x71 = x38 + x11
-val x75 = Recordintintint(rows = x72, cols = x73, mults = x74)
-val x76 = x5(x71) = x75
+val x61 = x15
+val x60 = x31 + x11
+val x62 = x5(x60) = x61
+
 x10 = x10 + 1
 }
+
 x7 = x7 + 1
 }
-val x81 = 0 * x3
-val x82 = x81 + x2
-val x83 = x5(x82)
-val x84 = println(x83)
-x84
+val x67 = x5(x2)
+val x68 = println(x67)
+x68
 }
 }
 /*****************************************
   End of Generated Code                  
 *******************************************/
-case class Recordintintint(rows: Int, cols: Int, mults: Int)
+
+case class Anon111043964(rows: Int, cols: Int, mults: Int)

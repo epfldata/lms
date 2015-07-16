@@ -45,7 +45,7 @@ class TestCrossStage extends FileDiffSuite {
 
   // don't know sharing dependencies between static data in general -- for now assume there is no sharing
   
-  def testCrossStage1 = {
+  it("testCrossStage1") {
     withOutFile(prefix+"csp1") {
       val f = (x: Int) => println("this is external non-DSL code: " + (2*x))
       
@@ -60,7 +60,7 @@ class TestCrossStage extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"csp1")
   }
 
-  def testCrossStage2 = {
+  it("testCrossStage2") {
     withOutFile(prefix+"csp2") {
       val acc = new ArrayBuffer[Int]
       

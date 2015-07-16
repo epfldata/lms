@@ -51,8 +51,8 @@ class TestHMM extends FileDiffSuite {
   // staged program implementations
 
   val prefix = home + "test-out/epfl/test11-"
-  
-  def testHmm1 = {
+
+  it("testHmm1") {
     withOutFileChecked(prefix+"hmm1") {
       trait Prog extends DSL {
         def test(v: Rep[Array[Int]]) = {
@@ -95,7 +95,7 @@ class TestHMM extends FileDiffSuite {
     }
   }
 
-  def testHmm2 = {
+  it("testHmm2") {
     withOutFileChecked(prefix+"hmm2") {
       trait Prog extends DSL {
         def test(v: Rep[Array[Int]]) = {
@@ -140,7 +140,7 @@ class TestHMM extends FileDiffSuite {
         override def array_apply[T:Manifest](x: Exp[Array[T]], n: Exp[Int])(implicit pos: SourceContext): Exp[T] = (x,n) match {
           case (Def(StaticData(x:Array[T])), Const(n)) => Const(x(n))
           case _ => super.array_apply(x,n)
-        }        
+        }
       }
     }
   }

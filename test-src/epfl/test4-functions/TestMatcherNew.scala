@@ -799,7 +799,7 @@ class TestMatcherNew extends FileDiffSuite {
 
 
 
-  def testMatcherTriv1 = {
+  it("testMatcherTriv1") {
     withOutFile(prefix+"matchertriv1") {
       object MatcherProgExp extends MatcherNewProgTrivialA
       MatcherProgExp.testMatching()
@@ -807,7 +807,7 @@ class TestMatcherNew extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"matchertriv1")
   }
 
-  def testMatcherTriv2 = {
+  it("testMatcherTriv2") {
     withOutFile(prefix+"matchertriv2") {
       object MatcherProgExp extends MatcherNewProgTrivialB
       MatcherProgExp.testMatching()
@@ -815,7 +815,7 @@ class TestMatcherNew extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"matchertriv2")
   }
 
-  def testMatcherTriv3 = {
+  it("testMatcherTriv3") {
     withOutFile(prefix+"matchertriv3") {
       object MatcherProgExp extends MatcherNewProgTrivialC
       MatcherProgExp.testMatching()
@@ -829,7 +829,7 @@ class TestMatcherNew extends FileDiffSuite {
   // civet 573 ms, dk.brics.automaton 816 ms
 
 
-  def testMatcherNew1 = withOutFileChecked(prefix+"matchernew1") {
+  it("testMatcherNew1") { withOutFileChecked(prefix+"matchernew1") {
     trait Prog extends DSL {
       def test(x: Rep[Unit]) = {
         
@@ -846,9 +846,9 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testMatcherNew1b = withOutFileChecked(prefix+"matchernew1b") {
+  it("testMatcherNew1b") { withOutFileChecked(prefix+"matchernew1b") {
     trait Prog extends DSL {
       def test(x: Rep[Unit]) = {
         
@@ -869,10 +869,10 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 
-  def testMatcherNew2 = withOutFileChecked(prefix+"matchernew2") {
+  it("testMatcherNew2") { withOutFileChecked(prefix+"matchernew2") {
     trait Prog extends DSL {
       def test(x: Rep[Unit]) = {
         
@@ -893,10 +893,10 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 
-  def testMatcherNew2b = withOutFileChecked(prefix+"matchernew2b") {
+  it("testMatcherNew2b") { withOutFileChecked(prefix+"matchernew2b") {
     trait Prog extends DSL {
       def test(x: Rep[Unit]) = {
         
@@ -921,10 +921,10 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 
-  def testCounter1 = withOutFileChecked(prefix+"counter1") {
+  it("testCounter1") { withOutFileChecked(prefix+"counter1") {
     trait Prog extends DSL with ListOps with Arith {
 
       def protect[A:Manifest](a:Rep[A],b:Rep[Any]): Rep[A] = protect(a, Seq(b).toList)
@@ -941,7 +941,7 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 
   trait StreamHelpers extends DSL with ListOps with Arith with BooleanOps with TupleOps with OrderingOps with StepperOps {
@@ -961,7 +961,7 @@ class TestMatcherNew extends FileDiffSuite {
       
   }
 
-  def testCounter2 = withOutFileChecked(prefix+"counter2") {
+  it("testCounter2") { withOutFileChecked(prefix+"counter2") {
     trait Prog extends DSL with StreamHelpers {
 
       def test(x: Rep[Unit]): DIO = {
@@ -980,9 +980,9 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testStream1 = withOutFileChecked(prefix+"stream1") {
+  it("testStream1") { withOutFileChecked(prefix+"stream1") {
     trait Prog extends DSL with StreamHelpers {
       
       def iseven(n: Rep[Double]) = bare[Boolean](n,s=>s+"%2 == 0")
@@ -1000,8 +1000,8 @@ class TestMatcherNew extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
-  
+  }}
+
 
 /*
   val req = "PUT /file HTTP/1.1\r\n"+

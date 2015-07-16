@@ -44,7 +44,7 @@ class TestPower extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test2-"
 
-  def testPower = {
+  it("testPower") {
     withOutFile(prefix+"power") {
 /*    
     println {

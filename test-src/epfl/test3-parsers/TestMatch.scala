@@ -55,7 +55,7 @@ class TestMatch extends FileDiffSuite {
       }
   */    
 
-  def testMatch1 = {
+  it("testMatch1") {
     withOutFile(prefix+"match1") {
       object MatchProgExp extends MatchProg with Matching with Extractors
         with MatchingExtractorsExp with FunctionsExpUnfoldAll
@@ -72,7 +72,7 @@ class TestMatch extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"match1-dot")
   }
   
-  def testMatch2 = { 
+  it("testMatch2") { 
     withOutFile(prefix+"match2") {
       object MatchProgExp extends MatchProg with Matching with Extractors
         with MatchingExtractorsExpOpt with FunctionsExpUnfoldAll

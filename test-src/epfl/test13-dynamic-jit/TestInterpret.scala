@@ -548,8 +548,7 @@ class TestInterpret extends FileDiffSuite {
     }
   }
   
-  
-  def testInterpret1 = withOutFileChecked(prefix+"interpret1") {
+  it("testInterpret1") { withOutFileChecked(prefix+"interpret1") {
     trait Prog extends DSL with InterpretPlain {
       def test() = {
 
@@ -583,9 +582,9 @@ class TestInterpret extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testInterpret2 = withOutFileChecked(prefix+"interpret2") {
+  it("testInterpret2") { withOutFileChecked(prefix+"interpret2") {
     trait Prog extends DSL with InterpretStaged {
       def test() = {
 
@@ -622,9 +621,9 @@ class TestInterpret extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-  def testInterpret3 = withOutFileChecked(prefix+"interpret3") {
+  it("testInterpret3") { withOutFileChecked(prefix+"interpret3") {
     trait Prog extends DSL with InterpretStagedReopt {
       def test() = {
 
@@ -668,5 +667,5 @@ class TestInterpret extends FileDiffSuite {
       }
     }
     new Prog with Impl with StableVarsExp
-  }
+  }}
 }

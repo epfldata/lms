@@ -140,7 +140,7 @@ class TestFusion extends FileDiffSuite {
   
   val prefix = home + "test-out/epfl/test7-"
   
-  def testFusion1 = {
+  it("testFusion1") {
     withOutFile(prefix+"fusion1") {
       new FusionProg with ArithExp with ArrayLoopsExp with PrintExp { self =>
         val codegen = new ScalaGenArrayLoops with ScalaGenArith with ScalaGenPrint { val IR: self.type = self }
@@ -150,7 +150,7 @@ class TestFusion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"fusion1")
   }
 
-  def testFusion2 = {
+  it("testFusion2") {
     withOutFile(prefix+"fusion2") {
       // LoopsExp2 with ArithExp with PrintExp with BaseFatExp
       new FusionProg with ArithExp with ArrayLoopsFatExp with IfThenElseFatExp with PrintExp  { self =>
@@ -162,7 +162,7 @@ class TestFusion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"fusion2")
   }
  
-  def testFusion3 = {
+  it("testFusion3") {
     withOutFile(prefix+"fusion3") {
       new FusionProg2 with ArithExp with ArrayLoopsFatExp with IfThenElseFatExp with PrintExp with IfThenElseExp with OrderingOpsExp  { self =>
         override val verbosity = 1
@@ -175,7 +175,7 @@ class TestFusion extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"fusion3")
   }
 
-  def testFusion4 = {
+  it("testFusion4") {
     withOutFile(prefix+"fusion4") {
       new FusionProg2 with ArithExp with ArrayLoopsFatExp with IfThenElseFatExp with PrintExp with IfThenElseExp with OrderingOpsExp  { self =>
         override val verbosity = 1

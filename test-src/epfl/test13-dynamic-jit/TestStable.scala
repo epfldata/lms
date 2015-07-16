@@ -235,7 +235,8 @@ class TestStable extends FileDiffSuite {
   
 
 
-  def testUnstage = withOutFileChecked(prefix+"unstage1") {
+
+  it("testUnstage") { withOutFileChecked(prefix+"unstage1") {
     trait Prog extends DSL with Functions with StaticData {
       def test() = {
 
@@ -263,11 +264,9 @@ class TestStable extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
-
-  
-  def testStable1 = withOutFileChecked(prefix+"stable1") {
+  it("testStable1") { withOutFileChecked(prefix+"stable1") {
     trait Prog extends DSL with Functions with StaticData {
       def test() = {
 
@@ -308,13 +307,10 @@ class TestStable extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
+  }}
 
 
-
-
-
-  def testStable2 = withOutFileChecked(prefix+"stable2") {
+  it("testStable2") { withOutFileChecked(prefix+"stable2") {
     trait Prog extends DSL {
       def test() = {
 
@@ -357,8 +353,6 @@ class TestStable extends FileDiffSuite {
       }
     }
     new Prog with Impl
-  }
-
-
+  }}
 
 }

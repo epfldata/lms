@@ -119,7 +119,7 @@ class TestStruct extends FileDiffSuite {
 
   
   
-  def testStruct1 = {
+  it("testStruct1") {
     withOutFile(prefix+"struct1") {
       // test variable splitting
       trait Prog extends DSL {
@@ -134,7 +134,7 @@ class TestStruct extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"struct1")
   }
 
-  def testStruct2 = {
+  it("testStruct2") {
     withOutFile(prefix+"struct2") {
       // test basic struct flattening (loops, variables, conditionals)
       println("REMARK: this makes only sense with fat codegen (computation duplicated and some structs not removed otherwise)")
@@ -164,7 +164,7 @@ class TestStruct extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"struct2")
   }
 
-  def testStruct2b = {
+  it("testStruct2b") {
     withOutFile(prefix+"struct2b") {
       // test basic struct flattening (loops, variables, conditionals)
       trait Prog extends DSL {
@@ -197,7 +197,7 @@ class TestStruct extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"struct2b")
   }
 
-  def testStruct3 = {
+  it("testStruct3") {
     withOutFile(prefix+"struct3") {
       // fuse conjugate computation with construction, essentially a no-op
       trait Prog extends DSL {
@@ -228,7 +228,7 @@ class TestStruct extends FileDiffSuite {
     assertFileEqualsCheck(prefix+"struct3")
   }
 
-  def testStruct4 = {
+  it("testStruct4") {
     withOutFile(prefix+"struct4") {
       trait Prog extends DSL {
         // recognize that only imaginary part is modified, real part untouched
@@ -260,7 +260,7 @@ class TestStruct extends FileDiffSuite {
   }
 
   // Two classes are generated if the refined type’s fields have the same type but different names
-  def testStruct5 = {
+  it("testStruct5") {
     withOutFile(prefix+"struct5") {
 
       trait Vectors extends StructOps {
@@ -281,7 +281,7 @@ class TestStruct extends FileDiffSuite {
   }
 
   // Only one class is generated if refined types are equivalent (their fields have the same names and types)
-  def testStruct6 = {
+  it("testStruct6") {
     withOutFile(prefix+"struct6") {
 
       trait Complex2 extends Arith with StructOps {
