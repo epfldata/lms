@@ -49,6 +49,49 @@ trait ScalaCompile extends Expressions {
   
   var dumpGeneratedCode = false
 
+  def compile0[B](f: () => Exp[B])(implicit mB: Manifest[B]): () =>B = {
+    if (this.compiler eq null)
+      setupCompiler()
+    
+    val className = "staged$" + compileCount
+    compileCount += 1
+    
+    val source = new StringWriter()
+    val writer = new PrintWriter(source)
+    val staticData = codegen.emitSource0(f, className, writer)
+
+    codegen.emitDataStructures(writer)
+
+    if (dumpGeneratedCode) println(source)
+
+    val compiler = this.compiler
+    val run = new compiler.Run
+
+    val fileSystem = new VirtualDirectory("<vfs>", None)
+    compiler.settings.outputDirs.setSingleOutput(fileSystem)
+  //      compiler.genJVM.outputDir = fileSystem
+
+    run.compileSources(List(new util.BatchSourceFile("<stdin>", source.toString)))
+    reporter.printSummary()
+
+    if (!reporter.hasErrors)
+      println("compilation: ok")
+    else
+      println("compilation: had errors")
+
+    reporter.reset
+    //output.reset
+
+    val parent = this.getClass.getClassLoader
+    val loader = new AbstractFileClassLoader(fileSystem, this.getClass.getClassLoader)
+
+    val cls: Class[_] = loader.loadClass(className)
+    val cons = cls.getConstructor(staticData.map(_._1.tp.erasure):_*)
+    
+    val obj: ()=>B = cons.newInstance(staticData.map(_._2.asInstanceOf[AnyRef]):_*).asInstanceOf[()=>B]
+    obj
+  }
+
   def compile[A,B](f: Exp[A] => Exp[B])(implicit mA: Manifest[A], mB: Manifest[B]): A=>B = {
     if (this.compiler eq null)
       setupCompiler()

@@ -90,7 +90,7 @@ trait GenericCodegen extends BlockTraversal {
       val targs = m.typeArguments
       if (targs.length > 0) {
         val ms = m.toString
-        ms.take(ms.indexOf("[")+1) + targs.map(tp => remap(tp)).mkString(", ") + "]"
+        remap(ms.take(ms.indexOf("["))) + "[" + targs.map(tp => remap(tp)).mkString(", ") + "]"
       }
       else m.toString    
   }
@@ -128,6 +128,11 @@ trait GenericCodegen extends BlockTraversal {
   def emitValDef(sym: Sym[Any], rhs: String): Unit
   def emitVarDecl(sym: Sym[Any]): Unit = throw new GenerationFailedException("don't know how to emit variable declaration " + quote(sym))
   def emitAssignment(sym: Sym[Any], rhs: String): Unit = throw new GenerationFailedException("don't know how to emit variable assignment " + quote(sym))
+
+  def emitSource0[R : Manifest](f: () => Exp[R], className: String, stream: PrintWriter, dynamicReturnType: String = null): List[(Sym[Any], Any)] = {
+    val body = reifyBlock(f())
+    emitSource(List(), body, className, stream)
+  }
 
   def emitSource[T1: Manifest, R : Manifest](f: (Exp[T1]) => Exp[R], className: String, stream: PrintWriter): List[(Sym[Any], Any)] = {
     val s1 = fresh[T1]
