@@ -3073,13 +3073,33 @@ trait ScalaGenTupleExternalOps extends TupleExternalGenBase {
     case _ => super.emitNode(sym, rhs)
   }
   
-/*  override def remap[A](m: Manifest[A]) = m.runtimeClass.getSimpleName match {
-    case "Tuple2" => "Tuple2" + m.typeArguments.foldLeft("")((x,y) => x + remap(y).toString).replace("Array[","ArrayOf").replace("]","")
-    case "Tuple3" => "Tuple3" + m.typeArguments.foldLeft("")((x,y) => x + remap(y).toString).replace("Array[","ArrayOf").replace("]","")
-    case "Tuple4" => "Tuple4" + m.typeArguments.foldLeft("")((x,y) => x + remap(y).toString).replace("Array[","ArrayOf").replace("]","")
-    case "Tuple5" => "Tuple5" + m.typeArguments.foldLeft("")((x,y) => x + remap(y).toString).replace("Array[","ArrayOf").replace("]","")
-    case _ => super.remap(m)
-  }*/
+  override def remap[A](m: Manifest[A]) = {
+    def ext = m.typeArguments.map(y => remap(y).toString).mkString("[",",","]")
+    m.runtimeClass.getSimpleName match {
+      case "Tuple2" => "Tuple2" + ext
+      case "Tuple3" => "Tuple3" + ext
+      case "Tuple4" => "Tuple4" + ext
+      case "Tuple5" => "Tuple5" + ext
+      case "Tuple6" => "Tuple6" + ext
+      case "Tuple7" => "Tuple7" + ext
+      case "Tuple8" => "Tuple8" + ext
+      case "Tuple9" => "Tuple9" + ext
+      case "Tuple10" => "Tuple10" + ext
+      case "Tuple11" => "Tuple11" + ext
+      case "Tuple12" => "Tuple12" + ext
+      case "Tuple13" => "Tuple13" + ext
+      case "Tuple14" => "Tuple14" + ext
+      case "Tuple15" => "Tuple15" + ext
+      case "Tuple16" => "Tuple16" + ext
+      case "Tuple17" => "Tuple17" + ext
+      case "Tuple18" => "Tuple18" + ext
+      case "Tuple19" => "Tuple19" + ext
+      case "Tuple20" => "Tuple20" + ext
+      case "Tuple21" => "Tuple21" + ext
+      case "Tuple22" => "Tuple22" + ext
+      case _ => super.remap(m)
+    }
+  }
 }
 
 trait CGenTupleExternalOps extends CGenTupleOps {
@@ -3136,87 +3156,87 @@ trait CGenTupleExternalOps extends CGenTupleOps {
   override def remap[A](m: Manifest[A]) = m.runtimeClass.getSimpleName match {
     case "Tuple2" =>
         val elems = IR.tuple_elems.take(2) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple3" =>
         val elems = IR.tuple_elems.take(3) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple4" =>
         val elems = IR.tuple_elems.take(4) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple5" =>
         val elems = IR.tuple_elems.take(5) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple6" =>
         val elems = IR.tuple_elems.take(6) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple7" =>
         val elems = IR.tuple_elems.take(7) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple8" =>
         val elems = IR.tuple_elems.take(8) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple9" =>
         val elems = IR.tuple_elems.take(9) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple10" =>
         val elems = IR.tuple_elems.take(10) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple11" =>
         val elems = IR.tuple_elems.take(11) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple12" =>
         val elems = IR.tuple_elems.take(12) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple13" =>
         val elems = IR.tuple_elems.take(13) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple14" =>
         val elems = IR.tuple_elems.take(14) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple15" =>
         val elems = IR.tuple_elems.take(15) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple16" =>
         val elems = IR.tuple_elems.take(16) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple17" =>
         val elems = IR.tuple_elems.take(17) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple18" =>
         val elems = IR.tuple_elems.take(18) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple19" =>
         val elems = IR.tuple_elems.take(19) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple20" =>
         val elems = IR.tuple_elems.take(20) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple21" =>
         val elems = IR.tuple_elems.take(21) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case "Tuple22" =>
         val elems = IR.tuple_elems.take(22) zip m.typeArguments
-        IR.registerStruct(IR.structName(m), elems)
+        IR.registerStructByType(IR.structName(m), elems)
         IR.structName(m) + "*"
     case _ => super.remap(m)
   }

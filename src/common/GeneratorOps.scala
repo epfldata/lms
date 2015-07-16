@@ -16,7 +16,7 @@ trait MapOps extends Base {
 }
 
 trait GeneratorOps extends Base with Variables with LiftVariables
-  with IfThenElse with Equal with TupleOps with ListOps with MapOps {
+  with IfThenElse with Equal with ListOps with MapOps {
 
   def materializeGenerator[T:Manifest,U:Manifest](gen: Generator[U]): Rep[T]
   def dematerializeGenerator[T:Manifest,U:Manifest](genCon: Rep[T]): Generator[U]
@@ -214,7 +214,7 @@ trait GeneratorOps extends Base with Variables with LiftVariables
 }
 
 trait GeneratorOpsExp extends GeneratorOps with EffectExp with VariablesExp
-  with IfThenElseExp with EqualExp with TupleOpsExp with ListOpsExp {
+  with IfThenElseExp with EqualExp with ListOpsExp {
 
   case class GeneratorContainer[T: Manifest,U:Manifest](gen: Generator[U]) extends Def[T]
   case class TupleGeneratorContainer[T: Manifest,U:Manifest,V:Manifest](gen: TupleGenerator[U,V]) extends Def[T]
@@ -236,7 +236,7 @@ trait GeneratorOpsExp extends GeneratorOps with EffectExp with VariablesExp
 }
 
 trait ScalaGenGeneratorOps extends ScalaGenVariables
-  with ScalaGenIfThenElse with ScalaGenEqual with ScalaGenListOps with ScalaGenTupleOps {
+  with ScalaGenIfThenElse with ScalaGenEqual with ScalaGenListOps {
   val IR: GeneratorOpsExp
   import IR._
 

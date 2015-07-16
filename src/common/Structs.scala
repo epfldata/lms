@@ -194,6 +194,10 @@ trait StructExp extends StructOps with StructTags with BaseExp with EffectExp wi
   def registerStruct[T](name: String, elems: Seq[(String, Rep[Any])]) {
     encounteredStructs += name -> elems.map(e => (e._1, e._2.tp))
   }
+
+  def registerStructByType[T](name: String, elems: Seq[(String, Manifest[_])]) {
+    encounteredStructs += name -> elems.map(e => (e._1, e._2))
+  }
   val encounteredStructs = new scala.collection.mutable.HashMap[String, Seq[(String, Manifest[_])]]
 }
 
