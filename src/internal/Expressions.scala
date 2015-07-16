@@ -171,6 +171,7 @@ trait Expressions extends Utils {
     case _ => None
   }
   
+  // TP stands for Typed Pair
   case class TP[+T](sym: Sym[T], rhs: Def[T]) extends Stm
 
   // graph construction state
